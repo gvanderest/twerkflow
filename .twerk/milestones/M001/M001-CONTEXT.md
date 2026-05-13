@@ -108,6 +108,9 @@ No wizard, no interactive init flow. Pi's `/login` handles auth.
   "name": "twerk",
   "version": "0.1.0",
   "bin": { "twerk": "./bin/twerk.js" },
+  "scripts": {
+    "start": "node bin/twerk.js"
+  },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "*"
   }
