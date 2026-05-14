@@ -6,12 +6,9 @@ Twerk is an intelligent automation system designed to streamline project managem
 
 At its heart, Twerk operates on an event-driven model. It listens for specific triggers from integrated services (Asana, Notion, GitHub) and, upon detection, initiates pre-defined workflows. These workflows can involve taking inputs, processing data, running complex logic, and submitting outputs back to the integrated services or other destinations.
 
-## Architecture
+## Architecture & Project Scope
 
-Twerk is designed with modularity in mind, separating core functionality from specific user configurations:
-
-*   **`twerk-lib`**: This component will house the core library, APIs, SDK, and the fundamental structure for defining and executing workflows. It provides the engine and the building blocks.
-*   **User Configuration Repositories**: Individual project repositories will contain the specific workflow definitions, triggers, sources, and outputs tailored to a particular project. This allows for easy customization and management of different project pipelines.
+This project serves as the initial implementation for defining and executing workflows, triggers, and end-to-end orchestration. While a separate core library (`twerk-lib`) may be considered in the future, the current focus is on establishing these core functionalities within this repository. This project will primarily house the user configurations for workflows and triggers.
 
 ## Key Features & Goals
 
