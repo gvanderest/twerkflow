@@ -18,6 +18,9 @@ jobs:
       - name: Setup environment
         run: make setup
       - name: Run checks
-        run: make check
+        run: |
+          source .venv/bin/activate
+          python -m mypy src
+          python -m pytest tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
