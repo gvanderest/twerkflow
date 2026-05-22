@@ -26,6 +26,7 @@ def test_hydration_flow_success():
 
     state = TwerkflowState(
         status="pending",
+        ticket_id="none",
     )
 
     result = app.invoke(state, config=config)
