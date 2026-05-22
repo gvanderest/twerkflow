@@ -17,6 +17,7 @@ class Settings(BaseModel):
 
     context: str
     drivers: Dict[str, Union[str, DriverConfig]]
+    poll_interval_seconds: int = 30  # Default value
 
     @field_validator("drivers")
     @classmethod
