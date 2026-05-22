@@ -48,7 +48,7 @@ class GitHubIssueTaskService(TaskService):
         """Updates the twerkflow state in an issue."""
         issue = self.repo.get_issue(int(task_id))
         state_json = state.model_dump_json(indent=2)
-        new_state_block = f"<twerkflow-state>\n{state_json}\n</twerkflow-state>"
+        new_state_block = f"```\n<twerkflow-state>\n{state_json}\n</twerkflow-state>\n```"
 
         # Replace or append
         if self._state_pattern.search(issue.body):
