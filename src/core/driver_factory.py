@@ -5,6 +5,7 @@ from src.drivers.github_wiki import GitHubWikiDocService
 from src.drivers.github_pr import GitHubPRService
 from src.drivers.asana import AsanaTaskService
 from src.drivers.notion import NotionDocService
+from src.drivers.config import GitHubIssueConfig
 from github import Github
 import os
 
@@ -18,7 +19,8 @@ class DriverFactory:
         if config.type == "github_issues":
             if not self.token:
                 raise EnvironmentError("GITHUB_TOKEN required for github_issues")
-            return GitHubIssueTaskService(config.params["repo_name"], Github(self.token))
+            typed_config = GitHubIssueConfig(**config.params)
+            return GitHubIssueTaskService(typed_config, Github(self.token))
         elif config.type == "asana":
             return AsanaTaskService(**config.params)
         raise ValueError(f"Unknown task driver: {config.type}")

@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 from src.drivers.github_issues import GitHubIssueTaskService
+from src.drivers.config import GitHubIssueConfig
 
 @patch("src.drivers.github_issues.Github")
 def test_github_issue_driver_scope(mock_github_class):
@@ -14,7 +15,7 @@ def test_github_issue_driver_scope(mock_github_class):
     test_repo = "gvanderest/twerkflow"
     
     # Initialize driver
-    driver = GitHubIssueTaskService(repo_name=test_repo)
+    driver = GitHubIssueTaskService(GitHubIssueConfig(repo_name=test_repo), mock_github_instance)
     
     # Verify it scoped to the correct repo immediately upon initialization
     mock_github_instance.get_repo.assert_called_once_with(test_repo)
@@ -39,7 +40,7 @@ def test_github_issue_driver_wrong_scope(mock_github_class):
     
     # Attempt to initialize with wrong repo
     wrong_repo = "some-other-org/some-other-repo"
-    GitHubIssueTaskService(repo_name=wrong_repo)
+    GitHubIssueTaskService(GitHubIssueConfig(repo_name=wrong_repo), mock_github_instance)
     
     # Verify it *correctly* scoped to the wrong repo (confirming our initialization logic uses what it is told)
     mock_github_instance.get_repo.assert_called_once_with(wrong_repo)
