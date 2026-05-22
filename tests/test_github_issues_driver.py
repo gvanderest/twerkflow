@@ -12,9 +12,7 @@ def test_github_issue_driver_methods():
     mock_issue = MagicMock()
     mock_issue.number = 123
     mock_issue.title = "Test"
-    mock_issue.body = (
-        'Body```<twerkflow>{"state":{"status":"pending"}}</twerkflow>```'
-    )
+    mock_issue.body = 'Body```<twerkflow>{"state":{"status":"pending"}}</twerkflow>```'
     mock_issue.state = "open"
     mock_issue.labels = [MagicMock(name="tag1")]
     mock_repo.get_issue.return_value = mock_issue
@@ -56,3 +54,11 @@ def test_github_issue_driver_methods():
     assert "body" in kwargs
     assert "done" in kwargs["body"]
     assert "```<twerkflow>" in kwargs["body"]
+
+    # Test append scenario
+    mock_issue.body = "Just body"
+    driver.update_twerkflow_state("123", state)
+
+    args, kwargs = mock_issue.edit.call_args
+    assert "body" in kwargs
+    assert "Just body\n\n---\n\n```<twerkflow>" in kwargs["body"]

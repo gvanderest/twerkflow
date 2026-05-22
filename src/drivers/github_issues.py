@@ -55,7 +55,7 @@ class GitHubIssueTaskService(TaskService):
         if self._state_pattern.search(issue.body):
             new_body = self._state_pattern.sub(new_state_block, issue.body)
         else:
-            new_body = f"{issue.body}\n\n{new_state_block}"
+            new_body = f"{issue.body}\n\n---\n\n{new_state_block}"
 
         issue.edit(body=new_body)
 
