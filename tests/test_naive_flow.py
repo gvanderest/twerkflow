@@ -7,7 +7,7 @@ from src.workflows.naive_flow import app
 
 def test_naive_flow_nodes():
     """Verifies naive workflow node logic."""
-    state = TwerkflowState(status="pending")
+    state = TwerkflowState(status="pending", ticket_id="1")
     config = {
         "configurable": {
             "task_service": MagicMock(),
@@ -22,7 +22,7 @@ def test_naive_flow_nodes():
 
 def test_naive_flow_abort():
     """Verifies naive workflow aborts correctly."""
-    state = TwerkflowState(status="pending")
+    state = TwerkflowState(status="pending", ticket_id="1")
     config = {
         "configurable": {
             "task_service": MagicMock(),

@@ -16,21 +16,21 @@ from src.workflows.hilo_flow import (
 
 def test_hilo_nodes():
     """Verify individual node logic for HILO flow."""
-    state = TwerkflowState()
+    state = TwerkflowState(ticket_id="123")
     config = {"configurable": {"ticket_id": "123"}}
 
     # Test finalize_task
-    state = TwerkflowState(status="pending")
+    state = TwerkflowState(status="pending", ticket_id="123")
     new_state = finalize_task(state, config)
     assert new_state.status == "done"
 
     # Test abort_task
-    state = TwerkflowState(status="pending")
+    state = TwerkflowState(status="pending", ticket_id="123")
     new_state = abort_task(state, config)
     assert new_state.status == "aborted"
 
     # Test process_task
-    state = TwerkflowState(status="pending")
+    state = TwerkflowState(status="pending", ticket_id="123")
     new_state = process_task(state, config)
     assert new_state.status == "processing"
 
@@ -41,7 +41,7 @@ def test_hilo_nodes():
 
 def test_hilo_flow_gate_check_tag():
     """Verify gate_check_tag logic."""
-    state = TwerkflowState()
+    state = TwerkflowState(ticket_id="123")
 
     # Test tagged
     config_tagged = {"configurable": {"tags": ["twerkflow"]}}
@@ -69,7 +69,7 @@ def test_hilo_flow_polling_logic():
         }
     }
 
-    state = TwerkflowState(status="pending")
+    state = TwerkflowState(status="pending", ticket_id="123")
 
     # Check approval
     assert check_approval(state, config) == "pending"

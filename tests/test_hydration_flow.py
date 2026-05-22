@@ -39,7 +39,7 @@ def test_hydration_flow_success():
 
 def test_nodes_and_edges():
     """Test individual nodes and conditional edges."""
-    state = TwerkflowState(status="pending")
+    state = TwerkflowState(status="pending", ticket_id="1")
 
     # Test delay_node
     mock_sleep = MagicMock()

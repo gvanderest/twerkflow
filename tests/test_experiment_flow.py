@@ -19,7 +19,7 @@ def test_generate_fortune():
         }
     }
 
-    state = TwerkflowState(status="starting")
+    state = TwerkflowState(status="starting", ticket_id="1")
 
     result = generate_fortune(state, config)
 
@@ -30,7 +30,7 @@ def test_generate_fortune():
 
 def test_nodes():
     """Verify nodes."""
-    state = TwerkflowState(status="pending")
+    state = TwerkflowState(status="pending", ticket_id="1")
     new_state = start_node(state, {})
     assert new_state.status == "starting"
 
