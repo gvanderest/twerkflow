@@ -20,22 +20,19 @@ def test_hilo_nodes():
     config = {"configurable": {"ticket_id": "123"}}
 
     # Test finalize_task
-    state = TwerkflowState(status="pending", messages=[])
+    state = TwerkflowState(status="pending")
     new_state = finalize_task(state, config)
     assert new_state.status == "done"
-    assert new_state.messages == ["Task finalized"]
 
     # Test abort_task
-    state = TwerkflowState(status="pending", messages=[])
+    state = TwerkflowState(status="pending")
     new_state = abort_task(state, config)
     assert new_state.status == "aborted"
-    assert new_state.messages == ["Abort triggered"]
 
     # Test process_task
-    state = TwerkflowState(status="pending", messages=[])
+    state = TwerkflowState(status="pending")
     new_state = process_task(state, config)
     assert new_state.status == "processing"
-    assert new_state.messages == ["Started processing"]
 
     # Test process_task error
     with pytest.raises(ValueError, match="Cannot process task without ticket_id"):
@@ -72,7 +69,7 @@ def test_hilo_flow_polling_logic():
         }
     }
 
-    state = TwerkflowState(status="pending", messages=[])
+    state = TwerkflowState(status="pending")
 
     # Check approval
     assert check_approval(state, config) == "pending"

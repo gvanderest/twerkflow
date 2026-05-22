@@ -24,7 +24,6 @@ def process_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowStat
 
     print(f"--- Processing task {ticket_id} ---")
     state.status = "processing"
-    state.messages.append("Started processing")
     return state
 
 
@@ -79,7 +78,6 @@ def finalize_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSta
     ticket_id = config["configurable"].get("ticket_id")
     print(f"--- Finalizing task {ticket_id} ---")
     state.status = "done"
-    state.messages.append("Task finalized")
     return state
 
 
@@ -88,7 +86,6 @@ def abort_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     ticket_id = config["configurable"].get("ticket_id")
     print(f"Aborting task {ticket_id}...")
     state.status = "aborted"
-    state.messages.append("Abort triggered")
     return state
 
 
