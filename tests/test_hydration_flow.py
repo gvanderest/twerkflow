@@ -21,12 +21,11 @@ def test_hydration_flow_success():
             "task_service": mock_task_service,
             "settings": mock_settings,
             "command_runner": MagicMock(),
+            "ticket_id": "1",
         }
     }
 
     state = TwerkflowState(
-        ticket_id="0",
-        ticket_title="Root",
         status="pending",
     )
 

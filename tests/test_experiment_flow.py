@@ -19,7 +19,7 @@ def test_generate_fortune():
         }
     }
 
-    state = TwerkflowState(status="starting", ticket_id="1")
+    state = TwerkflowState(status="starting")
 
     result = generate_fortune(state, config)
 
