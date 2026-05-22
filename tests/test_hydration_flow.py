@@ -20,6 +20,8 @@ def test_hydration_flow_success():
         "configurable": {
             "task_service": mock_task_service,
             "settings": mock_settings,
+            "ticket_id": "1",
+            "command_runner": MagicMock(),
         }
     }
 
@@ -31,7 +33,7 @@ def test_hydration_flow_success():
 
     result = app.invoke(state, config=config)
 
-    assert result["status"] == "hydrated"
+    assert result["status"] == "completed"
     mock_task_service.list_issues_by_label.assert_called_once()
     # Check persistence call
     assert mock_task_service.update_twerkflow_state.called
@@ -52,7 +54,7 @@ def test_nodes_and_edges():
     assert mock_sleep.called
 
     # Test check_hydration_status
-    state.status = "hydrated"
+    state.status = "starting"
     assert check_hydration_status(state) == "finished"
     state.status = "pending"
     assert check_hydration_status(state) == "delay"

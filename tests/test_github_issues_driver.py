@@ -13,9 +13,7 @@ def test_github_issue_driver_methods():
     mock_issue.number = 123
     mock_issue.title = "Test"
     mock_issue.body = (
-        "Body\n\n```\n<twerkflow>\n<state>\n"
-        '{"ticket_id":"123","status":"pending"}\n'
-        "</state>\n</twerkflow>\n```"
+        'Body\n\n```\n<twerkflow>\n<state>\n{"ticket_id":"123","status":"pending"}\n</state>\n</twerkflow>\n```'
     )
     mock_issue.state = "open"
     mock_issue.labels = [MagicMock(name="tag1")]
