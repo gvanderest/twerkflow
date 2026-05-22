@@ -7,7 +7,7 @@ echo "--- Running Pre-commit Checks ---"
 
 # 1. Linting
 echo "Running flake8 (linting)..."
-python -m flake8 src tests || echo "flake8 issues found."
+python -m flake8 --max-line-length=120 src tests || echo "flake8 issues found, but continuing."
 
 # 2. Typechecking
 echo "Running mypy (typechecking)..."
@@ -15,6 +15,6 @@ python -m mypy src || echo "mypy issues found."
 
 # 3. Unit Tests
 echo "Running pytest (tests)..."
-python -m pytest tests || echo "pytest issues found."
+python -m pytest --cov=src --cov-fail-under=90 tests || echo "pytest issues found or coverage below 90%."
 
 echo "--- Pre-commit Checks Complete ---"

@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Setup environment
+        run: make setup
+      - name: Run checks
+        run: make check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
