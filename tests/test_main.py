@@ -1,26 +1,15 @@
-"""Tests for main workflow entry point."""
+"""Tests for main entry point."""
 
 from unittest.mock import MagicMock
-from src.main import run_twerkflow
-from src.core.driver_factory import DriverFactory
+from src.main import run_watcher_app
 
 
-def test_run_twerkflow():
-    """Verifies workflow execution."""
-    # Setup mocks
-    mock_app = MagicMock()
-    mock_factory = MagicMock(spec=DriverFactory)
-    mock_task_service = MagicMock()
-    mock_factory.get_task_service.return_value = mock_task_service
+def test_run_watcher_app():
+    """Verify run_watcher_app initializes watcher."""
+    mock_watcher_class = MagicMock()
+    mock_watcher = MagicMock()
+    mock_watcher_class.return_value = mock_watcher
 
-    # Mock app invocation result
-    mock_app.invoke.return_value = {"status": "completed"}
+    run_watcher_app(iterations=1, watcher_class=mock_watcher_class)
 
-    # Execute
-    result = run_twerkflow("123", ["tag"], mock_app, mock_factory)
-
-    # Assertions
-    assert result == {"status": "completed"}
-    mock_app.invoke.assert_called_once()
-    assert mock_app.invoke.call_args[1]["config"]["configurable"]["ticket_id"] == "123"
-    assert mock_app.invoke.call_args[1]["config"]["configurable"]["task_service"] == mock_task_service
+    mock_watcher.run_watcher.assert_called_once_with(iterations=1)
