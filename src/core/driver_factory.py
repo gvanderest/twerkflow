@@ -8,8 +8,6 @@ from src.drivers.notion import NotionDocService
 from github import Github
 import os
 
-# Mapping driver types to implementation classes
-# ...
 class DriverFactory:
     def __init__(self):
         self.settings = load_settings()
@@ -24,3 +22,17 @@ class DriverFactory:
         elif config.type == "asana":
             return AsanaTaskService(**config.params)
         raise ValueError(f"Unknown task driver: {config.type}")
+
+    def get_doc_service(self) -> DocService:
+        config = self.settings.get_driver_config("doc_service")
+        if config.type == "github_wiki":
+            return GitHubWikiDocService()
+        elif config.type == "notion":
+            return NotionDocService()
+        raise ValueError(f"Unknown doc driver: {config.type}")
+
+    def get_pr_service(self) -> PRService:
+        config = self.settings.get_driver_config("pr_service")
+        if config.type == "github_pr":
+            return GitHubPRService()
+        raise ValueError(f"Unknown pr driver: {config.type}")
