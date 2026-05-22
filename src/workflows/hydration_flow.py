@@ -34,8 +34,9 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
         print(f"--- Hydrating issue: {issue['id']} ---")
 
         # Populate state with discovery
+        state.ticket_id = issue["id"]
         # Inject ticket_id into config dynamically
-        config["configurable"]["ticket_id"] = issue["id"]
+        config["configurable"]["ticket_id"] = state.ticket_id
 
         # PERSIST: Update the issue body with the state
         task_service.update_twerkflow_state(issue["id"], state)
@@ -48,8 +49,12 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
 
 def fortune_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Node: conditionally run fortune teller."""
-    # Ensure ticket_id is available in config if it was set during hydrate
-    if state.status == "starting" and "ticket_id" in config["configurable"]:
+    # The config is not shared between nodes, so we must rely on state.ticket_id
+    ticket_id = state.ticket_id
+    print(f"--- fortune_node: status={state.status}, ticket_id={ticket_id} ---")
+    if state.status == "starting" and ticket_id:
+        # Re-inject into config for generate_fortune
+        config["configurable"]["ticket_id"] = ticket_id
         return generate_fortune(state, config)
     return state
 
@@ -69,6 +74,7 @@ def delay_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
 
 def check_hydration_status(state: TwerkflowState) -> str:
     """Conditional edge: check if issues were hydrated."""
+    print(f"--- check_hydration_status: state.status={state.status} ---")
     if state.status in ["starting", "completed"]:
         return "finished"
     return "delay"
