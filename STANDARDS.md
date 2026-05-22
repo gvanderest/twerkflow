@@ -39,6 +39,12 @@ These standards ensure our LangGraph workflows remain maintainable, reusable, an
 - **Use Dependency Injection**: Test by injecting real objects or simple mocks into constructors, not by hijacking global names or environment state during test runtime.
 - **Enforcement**: Our pre-commit hook automatically scans for `@patch` and `monkeypatch` (except in `conftest.py`) and will reject commits that introduce them.
 
-### 8. Workflow Pattern Standards
-- **Separation of Examples/Experimental Flows**: New or complex workflow patterns (e.g., HILO, Polling) must be implemented in dedicated workflow files (e.g., `src/workflows/hilo_flow.py`) rather than modifying baseline/naive examples.
-- **Experimental Cleanliness**: Dedicated files for new patterns ensure baseline examples remain simple, improve maintainability, and isolate side effects during development and testing.
+### 7. Documentation Standards
+- **Requirement**: All code changes MUST be accompanied by a review of relevant documentation.
+- **Scan**: Before finalizing a PR, developers are responsible for scanning `docs/` and project-level markdown files (`README.md`, `STANDARDS.md`, etc.) to identify needed updates.
+- **Persistence**: Documentation must be updated in the same pull request as the corresponding code changes to ensure they remain synchronized.
+
+### 9. Pull Request Standards
+- **Requirement**: All pull requests must use the repository's standard PR template (`.github/pull_request_template.md`).
+- **Manual Testing**: PRs are incomplete without explicit "Manual Testing Steps" documenting how the changes were verified beyond automated tests.
+- **Auditability**: PR descriptions must provide sufficient context for reviewers to understand the "why" and "how" of the changes, fulfilling our auditing tenet.
