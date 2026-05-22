@@ -14,7 +14,9 @@ The primary goal is to shift from the current (conceptual) Asana/SQLite implemen
 - [ ] **State Persistence Module**: Refactor state management to read/write the `<twerkflow-state>...</twerkflow-state>` JSON block directly into GitHub Issue descriptions.
     - *Note*: Initially, we will implement basic read/write persistence for speed, prioritizing execution over complex concurrency handling.
     - *Note*: The JSON state block will be versioned from the start to allow for the future addition of optimistic locking (e.g., version/hash checking) without breaking existing state blobs.
-- [ ] **GitHub Issue Watcher**: Implement a mechanism to listen for activity (comments/edits) on tagged GitHub Issues.
+    - *Note*: We will only serialize the *minimal necessary* state (current node, task status) to maintain readability and avoid payload bloat.
+- [ ] **GitHub Issue Watcher**: Implement a mechanism to poll tagged GitHub Issues for activity.
+    - *Note*: Polling will be the initial mechanism to keep architecture simple without external infrastructure.
 - [ ] **Rehydration Logic**: Ensure that the LangGraph state can be perfectly reconstructed from the serialized state block in a GitHub Issue description upon startup or recovery.
 
 ## Phase 2: HILO Mechanisms & Sentinels
