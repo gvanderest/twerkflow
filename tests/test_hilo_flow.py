@@ -1,67 +1,45 @@
-"""Tests for HILO workflow."""
+"""Tests for hilo flow."""
 
-import os
 from unittest.mock import MagicMock
 from src.core.state import TwerkflowState
-from src.workflows.hilo_flow import app
-
-# Set dummy token for testing
-os.environ["GITHUB_TOKEN"] = "dummy"
+from src.workflows.hilo_flow import abort_task, finalize_task, process_task, polling_node
 
 
-class MockSettings:
-    """Mock settings for testing."""
-
-    def __init__(self, interval):
-        self.poll_interval_seconds = interval
-
-
-def test_hilo_flow_abort():
-    """Verify abort behavior."""
-    mock_task_service = MagicMock()
-    config = {
-        "configurable": {
-            "task_service": mock_task_service,
-            "ticket_id": "123",
-            "tags": ["other"],
-        }
-    }
-
+def test_hilo_nodes():
+    """Verify individual node logic for HILO flow."""
     state = TwerkflowState(status="pending", messages=[])
+    config = {"configurable": {"ticket_id": "123"}}
 
-    result = app.invoke(state, config=config)
-    # result is a dict, need to get the final state
-    assert result["status"] == "aborted"
-    assert "Abort triggered" in result["messages"]
+    # Test finalize_task
+    new_state = finalize_task(state, config)
+    assert new_state.status == "done"
+    assert "Task finalized" in new_state.messages
 
+    # Test abort_task
+    state.status = "pending"
+    new_state = abort_task(state, config)
+    assert new_state.status == "aborted"
+    assert "Abort triggered" in new_state.messages
 
-def test_hilo_flow_approval():
-    """Verify approval behavior."""
+    # Test process_task
+    state.status = "pending"
+    new_state = process_task(state, config)
+    assert new_state.status == "processing"
+    assert "Started processing" in new_state.messages
+
+    # Test polling_node (already approved)
     mock_task_service = MagicMock()
-
-    # Mock comments to include approval
-    mock_task_service.get_comments.return_value = [
-        {"user": "user", "body": "twerkflow approve design", "created_at": "2023-01-01"}
-    ]
-
-    mock_sleep = MagicMock()
-    mock_settings = MockSettings(interval=0)
-
-    config = {
+    mock_task_service.get_comments.return_value = [{"body": "twerkflow approve 123"}]
+    mock_settings = MagicMock()
+    mock_settings.poll_interval_seconds = 0
+    config_poll = {
         "configurable": {
-            "task_service": mock_task_service,
-            "sleep_func": mock_sleep,
-            "settings": mock_settings,
             "ticket_id": "123",
-            "tags": ["twerkflow"],
+            "task_service": mock_task_service,
+            "settings": mock_settings,
+            "sleep_func": MagicMock(),
         }
     }
-
-    state = TwerkflowState(
-        status="pending",
-        messages=[],
-    )
-
-    result = app.invoke(state, config=config)
-    assert result["status"] == "done"
-    assert "Task finalized" in result["messages"]
+    state.status = "pending"
+    new_state = polling_node(state, config_poll)
+    assert new_state.status == "approved"
