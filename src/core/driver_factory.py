@@ -12,15 +12,14 @@ import os
 class DriverFactory:
     def __init__(self):
         self.settings = load_settings()
-        self.token = os.getenv("GITHUB_TOKEN")
 
     def get_task_service(self) -> TaskService:
         config = self.settings.get_driver_config("task_service")
         if config.type == "github_issues":
-            if not self.token:
-                raise EnvironmentError("GITHUB_TOKEN required for github_issues")
             typed_config = GitHubIssueConfig(**config.params)
-            return GitHubIssueTaskService(typed_config, Github(self.token))
+            github_client = Github(typed_config.token.get_secret_value())
+            repo = github_client.get_repo(typed_config.repo_name)
+            return GitHubIssueTaskService(repo=repo)
         elif config.type == "asana":
             return AsanaTaskService(**config.params)
         raise ValueError(f"Unknown task driver: {config.type}")
@@ -30,7 +29,9 @@ class DriverFactory:
         if config.type == "github_wiki":
             return GitHubWikiDocService()
         elif config.type == "notion":
-            return NotionDocService()
+            from src.drivers.config import NotionConfig
+            typed_config = NotionConfig(**config.params)
+            return NotionDocService(token=typed_config.token.get_secret_value())
         raise ValueError(f"Unknown doc driver: {config.type}")
 
     def get_pr_service(self) -> PRService:

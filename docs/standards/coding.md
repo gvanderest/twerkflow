@@ -16,6 +16,7 @@ These standards ensure our LangGraph workflows remain maintainable, reusable, an
 - **Format**: `--- *Authored by Twerkflow (vX.Y)*` (or equivalent identifier).
 - **Self-Ignorance**: Nodes responsible for triggering actions based on comments must parse existing comments to ignore those containing the watermark.
 
-## 4. State Management
-- **Pydantic**: All `State` objects must be Pydantic models.
-- **Serializability**: Ensure state can be fully serialized to JSON for storage in ticket descriptions.
+## 5. Dependency Injection (DI)
+- **Constructor Injection**: All external services (APIs, clients, file systems) must be passed into class constructors.
+- **No Hidden Dependencies**: Drivers and nodes should not initialize external clients (e.g., `Github()`, `asana.Client()`) within their `__init__` methods.
+- **Testability**: By injecting dependencies, we enable seamless mocking during unit tests without requiring complex `unittest.mock.patch` calls.
