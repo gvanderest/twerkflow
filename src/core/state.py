@@ -10,11 +10,6 @@ class TwerkflowState(BaseModel):
     # Allow nodes to add/manage custom keys dynamically
     model_config = ConfigDict(extra="allow")
 
-    # Basic ticket details
-    ticket_id: Optional[str] = None
-    ticket_title: Optional[str] = None
-    ticket_body: Optional[str] = None
-
     # Dynamic workflow state
     status: Optional[str] = None
     context: Dict[str, Any] = Field(default_factory=dict)

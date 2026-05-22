@@ -34,11 +34,8 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
         print(f"--- Hydrating issue: {issue['id']} ---")
 
         # Populate state with discovery
-        state.ticket_id = issue["id"]
-        state.ticket_title = issue["title"]
-        state.ticket_body = issue["body"]
         # Inject ticket_id into config dynamically
-        config["configurable"]["ticket_id"] = state.ticket_id
+        config["configurable"]["ticket_id"] = issue["id"]
 
         # PERSIST: Update the issue body with the state
         task_service.update_twerkflow_state(issue["id"], state)
