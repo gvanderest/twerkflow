@@ -6,6 +6,7 @@ from langchain_core.runnables import RunnableConfig
 from src.core.state import TwerkflowState
 from src.drivers.base import TaskService
 from src.core.config_loader import load_settings
+from src.workflows.experiment_flow import generate_fortune
 
 
 def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
@@ -40,8 +41,15 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
         task_service.update_twerkflow_state(issue["id"], state)
         print(f"--- Persisted state to issue {issue['id']} ---")
 
-        state.status = "hydrated"
+        state.status = "starting"
 
+    return state
+
+
+def fortune_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
+    """Node: conditionally run fortune teller."""
+    if state.status == "starting":
+        return generate_fortune(state, config)
     return state
 
 
@@ -60,7 +68,7 @@ def delay_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
 
 def check_hydration_status(state: TwerkflowState) -> str:
     """Conditional edge: check if issues were hydrated."""
-    if state.status == "hydrated":
+    if state.status in ["starting", "completed"]:
         return "finished"
     return "delay"
 
@@ -68,11 +76,13 @@ def check_hydration_status(state: TwerkflowState) -> str:
 # Assemble Graph
 workflow = StateGraph(TwerkflowState)
 workflow.add_node("hydrate", hydrate_issues)
+workflow.add_node("fortune", fortune_node)
 workflow.add_node("delay", delay_node)
 workflow.set_entry_point("hydrate")
 
 # Conditional edges to loop
-workflow.add_conditional_edges("hydrate", check_hydration_status, {"finished": END, "delay": "delay"})
+workflow.add_conditional_edges("hydrate", check_hydration_status, {"finished": "fortune", "delay": "delay"})
+workflow.add_edge("fortune", END)
 workflow.add_edge("delay", "hydrate")
 
 app = workflow.compile()
