@@ -12,4 +12,5 @@ class TwerkflowState(BaseModel):
 
     # Dynamic workflow state
     status: Optional[str] = None
+    ticket_id: Optional[str] = None
     context: Dict[str, Any] = Field(default_factory=dict)
