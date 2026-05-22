@@ -1,0 +1,18 @@
+{
+    // The Twerkflow environment context.
+    "context": "twerkflow_dev",
+
+    // Interval in seconds for polling GitHub issues.
+    "poll_interval_seconds": 30,
+
+    "drivers": {
+        "task_service": {
+            "type": "github_issues",
+            "params": {
+                "repo_name": "gvanderest/twerkflow"
+            }
+        },
+        "doc_service": "github_wiki",
+        "pr_service": "github_pr"
+    }
+}
