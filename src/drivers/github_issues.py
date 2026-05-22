@@ -1,6 +1,7 @@
 """Provides a service to interact with GitHub issues."""
 
 import re
+import json
 from typing import Any, Dict, List, Optional
 
 from src.drivers.base import TaskService
@@ -13,7 +14,7 @@ class GitHubIssueTaskService(TaskService):
     def __init__(self, repo: Any):
         """Initializes the GitHubIssueTaskService."""
         self.repo = repo
-        self._state_pattern = re.compile(r"```\n<twerkflow>\n<state>\n(.*?)\n</state>\n</twerkflow>\n```", re.DOTALL)
+        self._state_pattern = re.compile(r"```<twerkflow>(.*?)</twerkflow>```", re.DOTALL)
 
     def get_task(self, task_id: str) -> Dict[str, Any]:
         """Fetches a task from GitHub issues."""
@@ -40,15 +41,15 @@ class GitHubIssueTaskService(TaskService):
         if not match:
             return None
 
-        state_json = match.group(1)
-        return TwerkflowState.model_validate_json(state_json)
+        state_data = json.loads(match.group(1))
+        return TwerkflowState.model_validate(state_data["state"])
 
     def update_twerkflow_state(self, task_id: str, state: TwerkflowState) -> None:
         """Updates the twerkflow state in an issue."""
         issue = self.repo.get_issue(int(task_id))
         # Use unformatted JSON
-        state_json = state.model_dump_json()
-        new_state_block = f"```\n<twerkflow>\n<state>\n{state_json}\n</state>\n</twerkflow>\n```"
+        state_dict = {"state": state.model_dump()}
+        new_state_block = f"```<twerkflow>{json.dumps(state_dict)}</twerkflow>```"
 
         # Replace or append
         if self._state_pattern.search(issue.body):
