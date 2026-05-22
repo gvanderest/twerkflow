@@ -48,7 +48,8 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
 
 def fortune_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Node: conditionally run fortune teller."""
-    if state.status == "starting":
+    # Ensure ticket_id is available in config if it was set during hydrate
+    if state.status == "starting" and "ticket_id" in config["configurable"]:
         return generate_fortune(state, config)
     return state
 
