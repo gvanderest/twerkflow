@@ -17,6 +17,7 @@ The primary goal is to shift from the current (conceptual) Asana/SQLite implemen
     - *Note*: We will only serialize the *minimal necessary* state (current node, task status) to maintain readability and avoid payload bloat.
 - [ ] **GitHub Issue Watcher**: Implement a mechanism to poll tagged GitHub Issues for activity.
     - *Note*: Polling will be the initial mechanism to keep architecture simple without external infrastructure.
+    - *Note*: Polling will be implemented *within* the LangGraph nodes (suspending during task execution) with a configurable interval (initially 30s) to avoid constant API overhead.
 - [ ] **Rehydration Logic**: Ensure that the LangGraph state can be perfectly reconstructed from the serialized state block in a GitHub Issue description upon startup or recovery.
 
 ## Phase 2: HILO Mechanisms & Sentinels
