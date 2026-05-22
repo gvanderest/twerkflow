@@ -43,36 +43,38 @@ class HydrationWatcher:
             if not any(label.name in ["twerkflow-complete", "twerkflow-hilo"] for label in i.get("labels", []))
         ]
 
-        # Find the first one that hasn't been hydrated (doesn't have twerkflow tag in body)
-        # Note: assuming 'task_service.list_issues_by_label' returns objects with labels
-        unhydrated_issues = [i for i in candidates if "<twerkflow>" not in i.get("body", "")]
-
-        if not unhydrated_issues:
-            # Check if there are any issues at all
-            if candidates:
-                print(f"--- All {len(candidates)} issues are already hydrated. ---")
-            else:
-                print("--- No issues found with tag 'twerkflow'. ---")
+        if not candidates:
+            print("--- No issues found with tag 'twerkflow'. ---")
             return None
 
-        issue = unhydrated_issues[0]
-        print(f"--- Hydrating issue: {issue['id']} ---")
+        # Process candidates: either hydrate them or resume if already hydrated
+        for issue in candidates:
+            print(f"--- Processing issue: {issue['id']} ---")
 
-        config = {
-            "configurable": {
-                "task_service": task_service,
-                "tags": tags,
-                "ticket_id": issue["id"],
-                "command_runner": command_runner,
+            # Check if hydrated
+            existing_state = task_service.get_twerkflow_state(issue["id"])
+
+            config = {
+                "configurable": {
+                    "task_service": task_service,
+                    "tags": tags,
+                    "ticket_id": issue["id"],
+                    "command_runner": command_runner,
+                }
             }
-        }
 
-        # State creation is now deferred until we have an ID
-        initial_state = TwerkflowState(status="starting", ticket_id=issue["id"])
+            if existing_state:
+                print(f"--- Resuming issue: {issue['id']} ---")
+                state = existing_state
+            else:
+                print(f"--- Hydrating issue: {issue['id']} ---")
+                state = TwerkflowState(status="starting", ticket_id=issue["id"])
 
-        result = self.app.invoke(initial_state, config=config)
-        print(f"Hydration Cycle Result: {result}")
-        return result
+            # Execute workflow
+            result = self.app.invoke(state, config=config)
+            print(f"Cycle Result for {issue['id']}: {result}")
+
+        return None
 
     def run_watcher(self, iterations: int = 0):
         """Runs the hydration watcher service loop."""
