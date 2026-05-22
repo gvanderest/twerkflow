@@ -1,18 +1,10 @@
-# Dependencies
-node_modules/
+# Python/Venv
+.venv/
+__pycache__/
+*.pyc
 
-# Lockfile — committed for apps, ignored for libraries.
-# Twerk is a globally-installed CLI (an app), so we keep package-lock.json.
-# Remove this line if you want to track it.
-# package-lock.json
+# Environment
+.env
 
-# Build output (none yet, but common for future TS compilation)
-dist/
-
-# Runtime / OS
-.DS_Store
-*.log
-npm-debug.log*
-
-# Local twerk config dir (the live runtime directory, not the source)
-.twerk/
+# Project Specific
+.twerkflow/
