@@ -42,10 +42,9 @@ class GitHubIssueTaskService(TaskService):
             return None
 
         state_data = json.loads(match.group(1))
-        state = TwerkflowState.model_validate(state_data["state"])
-        # Inject ticket_id from issue metadata
-        state.ticket_id = str(issue.number)
-        return state
+        state_dict = state_data["state"]
+        state_dict["ticket_id"] = str(issue.number)
+        return TwerkflowState.model_validate(state_dict)
 
     def update_twerkflow_state(self, task_id: str, state: TwerkflowState) -> None:
         """Updates the twerkflow state in an issue."""
