@@ -30,6 +30,6 @@ $VENV_PYTHON -m mypy src || exit 1
 
 # 3. Unit Tests
 echo "Running pytest (tests)..."
-$VENV_PYTHON -m pytest --cov=src --cov-fail-under=75 tests || exit 1
+$VENV_PYTHON -m pytest --cov=src --cov-fail-under=90 tests || exit 1
 
 echo "--- Pre-commit Checks Complete ---"
