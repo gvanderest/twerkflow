@@ -13,7 +13,7 @@ check:
 	@. .venv/bin/activate && ./scripts/precommit.sh
 
 # Run the application
-run:
+start:
 	@export PYTHONPATH=$PYTHONPATH:. && . .venv/bin/activate && python src/main.py
 
 # Clean up build/venv artifacts
