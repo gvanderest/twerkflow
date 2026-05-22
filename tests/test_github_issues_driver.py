@@ -13,7 +13,7 @@ def test_github_issue_driver_methods():
     mock_issue.number = 123
     mock_issue.title = "Test"
     mock_issue.body = (
-        'Body\n\n```\n<twerkflow>\n<state>\n{"ticket_id":"123","status":"pending"}\n</state>\n</twerkflow>\n```'
+        'Body```<twerkflow>{"state":{"status":"pending"}}</twerkflow>```'
     )
     mock_issue.state = "open"
     mock_issue.labels = [MagicMock(name="tag1")]
@@ -46,7 +46,7 @@ def test_github_issue_driver_methods():
     # Test state persistence
     state = driver.get_twerkflow_state("123")
     assert state is not None
-    assert state.ticket_id == "123"
+    assert state.status == "pending"
 
     state.status = "done"
     driver.update_twerkflow_state("123", state)
@@ -55,4 +55,4 @@ def test_github_issue_driver_methods():
     args, kwargs = mock_issue.edit.call_args
     assert "body" in kwargs
     assert "done" in kwargs["body"]
-    assert "```\n<twerkflow>\n<state>" in kwargs["body"]
+    assert "```<twerkflow>" in kwargs["body"]
