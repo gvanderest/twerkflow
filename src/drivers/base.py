@@ -1,7 +1,10 @@
 """Defines base abstract classes for task, document, and PR services."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.core.state import TwerkflowState
 
 
 class TaskService(ABC):
@@ -25,6 +28,11 @@ class TaskService(ABC):
     @abstractmethod
     def get_comments(self, task_id: str) -> List[Dict[str, Any]]:
         """Fetches comments for a task."""
+        pass
+
+    @abstractmethod
+    def update_twerkflow_state(self, task_id: str, state: "TwerkflowState") -> None:
+        """Updates the twerkflow state in a task."""
         pass
 
     @abstractmethod

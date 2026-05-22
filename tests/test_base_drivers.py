@@ -22,6 +22,10 @@ class DummyTask(TaskService):
         """Mock get_comments."""
         return []
 
+    def update_twerkflow_state(self, id, state):
+        """Mock update_twerkflow_state."""
+        pass
+
     def list_issues_by_label(self, label):
         """Mock list_issues_by_label."""
         return []

@@ -1,5 +1,6 @@
 """Defines the hydration workflow."""
 
+import time
 from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnableConfig
 from src.core.state import TwerkflowState
@@ -10,16 +11,6 @@ from src.core.config_loader import load_settings
 def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Node: find tagged issues and hydrate state."""
     task_service: TaskService = config["configurable"]["task_service"]
-    # Get config for the task_service
-    # We are assuming it's GitHubIssueTaskService here for this demo
-    # In a more robust system, we would get the config from the DriverFactory
-
-    # Let's inspect the driver to see how to get the config
-    # Actually, the driver doesn't store its config, it only gets it via init.
-    # To get the label, we need the driver to have been initialized with the config.
-    # Or we can get it from settings via DriverFactory.
-
-    # For now, let's just get it from settings globally as a hack
     settings = load_settings()
     label = settings.get_driver_config("task_service").params.get("label_to_search")
 
@@ -30,20 +21,54 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
 
     issues = task_service.list_issues_by_label(label)
 
-    for issue in issues:
-        print(f"Checking issue: {issue['id']}")
-        # In a real hydration scenario, we'd check if the state block exists
-        # and if not, initialize it.
-        # This is a proof-of-work: just find and log.
+    if not issues:
+        print("--- No issues found. ---")
+        state.status = "no_issues"
+    else:
+        # For this PoW, take the first one found
+        issue = issues[0]
+        print(f"--- Hydrating issue: {issue['id']} ---")
 
-    state.status = "hydrated"
+        # Populate state
+        state.ticket_id = issue["id"]
+        state.ticket_title = issue["title"]
+        state.status = "hydrated"
+
+        # PERSIST: Update the issue body with the state
+        task_service.update_twerkflow_state(state.ticket_id, state)
+        print(f"--- Persisted state to issue {issue['id']} ---")
+
     return state
+
+
+def delay_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
+    """Node: delay before re-polling."""
+    settings = load_settings()
+    interval = settings.poll_interval_seconds
+    # DI: Get sleep_func, default to time.sleep
+    sleep_func = config["configurable"].get("sleep_func", time.sleep)
+
+    print(f"--- Sleeping for {interval}s ---")
+    sleep_func(interval)
+    state.status = "pending"
+    return state
+
+
+def check_hydration_status(state: TwerkflowState) -> str:
+    """Conditional edge: check if issues were hydrated."""
+    if state.status == "hydrated":
+        return "finished"
+    return "delay"
 
 
 # Assemble Graph
 workflow = StateGraph(TwerkflowState)
 workflow.add_node("hydrate", hydrate_issues)
+workflow.add_node("delay", delay_node)
 workflow.set_entry_point("hydrate")
-workflow.add_edge("hydrate", END)
+
+# Conditional edges to loop
+workflow.add_conditional_edges("hydrate", check_hydration_status, {"finished": END, "delay": "delay"})
+workflow.add_edge("delay", "hydrate")
 
 app = workflow.compile()
