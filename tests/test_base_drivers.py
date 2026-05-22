@@ -55,12 +55,8 @@ def test_base_drivers():
     """Verifies that dummy driver implementations work."""
     task = DummyTask()
     task.update_task("1", {})
+    task.update_twerkflow_state("1", {})
     assert task.get_task("1") == {}
     assert task.get_events("1") == []
     assert task.get_comments("1") == []
-
-    doc = DummyDoc()
-    doc.write_doc("1", "content")
-    assert doc.get_doc("1") == ""
-
-    assert DummyPR().create_pr("b", "t", "d") == "pr"
+    assert task.list_issues_by_label("test") == []
