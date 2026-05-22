@@ -21,12 +21,15 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
 
     issues = task_service.list_issues_by_label(label)
 
-    if not issues:
-        print("--- No issues found. ---")
+    # Filter for un-hydrated issues
+    unhydrated_issues = [i for i in issues if "<twerkflow-state>" not in i["body"]]
+
+    if not unhydrated_issues:
+        print("--- No un-hydrated issues found. ---")
         state.status = "no_issues"
     else:
-        # For this PoW, take the first one found
-        issue = issues[0]
+        # Take the first one found
+        issue = unhydrated_issues[0]
         print(f"--- Hydrating issue: {issue['id']} ---")
 
         # Populate state

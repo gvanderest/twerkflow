@@ -1,9 +1,12 @@
 """Main entry point for the Twerkflow."""
 
+import time
+import argparse
 from typing import Any, Optional
-
 from src.core.driver_factory import DriverFactory
 from src.core.state import TwerkflowState
+from src.core.config_loader import load_settings
+from src.workflows.hydration_flow import app
 
 
 def run_twerkflow(ticket_id: Optional[str], tags: list, app: Any, factory: DriverFactory):
@@ -26,11 +29,23 @@ def run_twerkflow(ticket_id: Optional[str], tags: list, app: Any, factory: Drive
 
 
 if __name__ == "__main__":
-    from src.workflows.hydration_flow import app
+    parser = argparse.ArgumentParser(description="Twerkflow Hydration Watcher")
+    parser.add_argument("--iterations", type=int, default=0, help="Number of iterations to run (0 for infinite)")
+    args = parser.parse_args()
 
     # Test: Run hydration (should find tagged issues)
-    print("--- Test: Hydration Flow ---")
+    print(f"--- Starting Hydration Watcher (iterations: {args.iterations or 'infinite'}) ---")
 
-    # Passing None for ticket_id as hydration flow discovers them
     factory = DriverFactory()
-    run_twerkflow(None, ["twerkflow"], app, factory)
+    settings = load_settings()
+    interval = settings.poll_interval_seconds
+
+    count = 0
+    while args.iterations == 0 or count < args.iterations:
+        run_twerkflow(None, ["twerkflow"], app, factory)
+
+        # Add delay between hydration loop iterations
+        print(f"--- Cycle complete, sleeping for {interval}s ---")
+        time.sleep(interval)
+
+        count += 1
