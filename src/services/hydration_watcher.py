@@ -34,7 +34,7 @@ class HydrationWatcher:
         config = {"configurable": {"task_service": task_service, "tags": tags}}
 
         # Hydration flow doesn't need ticket_id initially
-        initial_state = TwerkflowState(status="pending", messages=[])
+        initial_state = TwerkflowState(status="pending")
 
         result = self.app.invoke(initial_state, config=config)
         print(f"Hydration Cycle Result: {result}")
