@@ -12,6 +12,8 @@ Enable Twerkflow to manage the software development lifecycle by reading/writing
 The primary goal is to shift from the current (conceptual) Asana/SQLite implementation to a robust GitHub-native model.
 
 - [ ] **State Persistence Module**: Refactor state management to read/write the `<twerkflow-state>...</twerkflow-state>` JSON block directly into GitHub Issue descriptions.
+    - *Note*: Initially, we will implement basic read/write persistence for speed, prioritizing execution over complex concurrency handling.
+    - *Note*: The JSON state block will be versioned from the start to allow for the future addition of optimistic locking (e.g., version/hash checking) without breaking existing state blobs.
 - [ ] **GitHub Issue Watcher**: Implement a mechanism to listen for activity (comments/edits) on tagged GitHub Issues.
 - [ ] **Rehydration Logic**: Ensure that the LangGraph state can be perfectly reconstructed from the serialized state block in a GitHub Issue description upon startup or recovery.
 
