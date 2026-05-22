@@ -13,7 +13,7 @@ class GitHubIssueTaskService(TaskService):
     def __init__(self, repo: Any):
         """Initializes the GitHubIssueTaskService."""
         self.repo = repo
-        self._state_pattern = re.compile(r"<twerkflow-state>(.*?)</twerkflow-state>", re.DOTALL)
+        self._state_pattern = re.compile(r"```\n<twerkflow>\n<state>\n(.*?)\n</state>\n</twerkflow>\n```", re.DOTALL)
 
     def get_task(self, task_id: str) -> Dict[str, Any]:
         """Fetches a task from GitHub issues."""
@@ -23,7 +23,6 @@ class GitHubIssueTaskService(TaskService):
             "title": issue.title,
             "body": issue.body,
             "status": issue.state,
-            "tags": [label.name for label in issue.labels],
         }
 
     def update_task(self, task_id: str, data: Dict[str, Any]) -> None:
@@ -47,8 +46,9 @@ class GitHubIssueTaskService(TaskService):
     def update_twerkflow_state(self, task_id: str, state: TwerkflowState) -> None:
         """Updates the twerkflow state in an issue."""
         issue = self.repo.get_issue(int(task_id))
-        state_json = state.model_dump_json(indent=2)
-        new_state_block = f"```\n<twerkflow-state>\n{state_json}\n</twerkflow-state>\n```"
+        # Use unformatted JSON
+        state_json = state.model_dump_json()
+        new_state_block = f"```\n<twerkflow>\n<state>\n{state_json}\n</state>\n</twerkflow>\n```"
 
         # Replace or append
         if self._state_pattern.search(issue.body):

@@ -22,5 +22,5 @@ def test_run_twerkflow():
     # Assertions
     assert result == {"status": "completed"}
     mock_app.invoke.assert_called_once()
-    assert mock_app.invoke.call_args[0][0].ticket_id == "123"
+    assert mock_app.invoke.call_args[1]["config"]["configurable"]["ticket_id"] == "123"
     assert mock_app.invoke.call_args[1]["config"]["configurable"]["task_service"] == mock_task_service

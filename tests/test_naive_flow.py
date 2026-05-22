@@ -1,23 +1,35 @@
-"""Tests for naive workflow nodes."""
+"""Tests for naive workflow."""
 
 from unittest.mock import MagicMock
-from src.workflows.naive_flow import gate_check_tag, process_task, abort_task
 from src.core.state import TwerkflowState
+from src.workflows.naive_flow import app
 
 
 def test_naive_flow_nodes():
     """Verifies naive workflow node logic."""
-    state = TwerkflowState(ticket_id="1", ticket_title="Test", tags=["twerkflow"])
-    config = {"configurable": {"task_service": MagicMock()}}
+    state = TwerkflowState(status="pending", messages=[])
+    config = {
+        "configurable": {
+            "task_service": MagicMock(),
+            "ticket_id": "1",
+            "tags": ["twerkflow"],
+        }
+    }
 
-    assert gate_check_tag(state, config) == "process"
+    result = app.invoke(state, config=config)
+    assert result["status"] == "processing"
 
-    state.tags = []
-    assert gate_check_tag(state, config) == "abort"
 
-    # Test nodes
-    process_task(state, config)
-    assert state.status == "processing"
+def test_naive_flow_abort():
+    """Verifies naive workflow aborts correctly."""
+    state = TwerkflowState(status="pending", messages=[])
+    config = {
+        "configurable": {
+            "task_service": MagicMock(),
+            "ticket_id": "1",
+            "tags": ["other"],
+        }
+    }
 
-    abort_task(state, config)
-    assert state.status == "aborted"
+    result = app.invoke(state, config=config)
+    assert result["status"] == "aborted"
