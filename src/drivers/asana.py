@@ -27,3 +27,7 @@ class AsanaTaskService(TaskService):
     def list_issues_by_label(self, label: str) -> List[Dict[str, Any]]:
         """Lists issues with a specific label from Asana."""
         raise NotImplementedError("AsanaTaskService.list_issues_by_label not implemented")
+
+    def update_twerkflow_state(self, task_id: str, state: Any) -> None:
+        """Updates the twerkflow state in Asana."""
+        raise NotImplementedError("AsanaTaskService.update_twerkflow_state not implemented")
