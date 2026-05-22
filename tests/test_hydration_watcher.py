@@ -32,7 +32,8 @@ def test_hydration_watcher_run_once():
     watcher = HydrationWatcher(config)
     result = watcher.run_once(None, ["twerkflow"])
 
-    assert result == {"status": "hydrated"}
+    assert result is None  # run_once returns None, the loop processes issues
+    # But wait, run_once now iterates, so we should check if app.invoke was called
     mock_app.invoke.assert_called_once()
     assert mock_factory.get_task_service.called
 
