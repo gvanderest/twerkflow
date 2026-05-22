@@ -42,13 +42,20 @@ class GitHubIssueTaskService(TaskService):
             return None
 
         state_data = json.loads(match.group(1))
-        return TwerkflowState.model_validate(state_data["state"])
+        state = TwerkflowState.model_validate(state_data["state"])
+        # Inject ticket_id from issue metadata
+        state.ticket_id = str(issue.number)
+        return state
 
     def update_twerkflow_state(self, task_id: str, state: TwerkflowState) -> None:
         """Updates the twerkflow state in an issue."""
         issue = self.repo.get_issue(int(task_id))
         # Use unformatted JSON
-        state_dict = {"state": state.model_dump()}
+        state_dump = state.model_dump()
+        # Strip ticket_id before persisting
+        state_dump.pop("ticket_id", None)
+
+        state_dict = {"state": state_dump}
         new_state_block = f"```<twerkflow>{json.dumps(state_dict)}</twerkflow>```"
 
         # Replace or append
