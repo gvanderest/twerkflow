@@ -1,12 +1,10 @@
-import pytest
-import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from src.drivers.github_issues import GitHubIssueTaskService
 
-@patch("src.drivers.github_issues.Github")
-def test_github_issue_driver_methods(mock_github_class):
+def test_github_issue_driver_methods():
     mock_repo = MagicMock()
-    mock_github_class.return_value.get_repo.return_value = mock_repo
+    mock_github = MagicMock()
+    mock_github.get_repo.return_value = mock_repo
     
     # Mock issue
     mock_issue = MagicMock()
@@ -30,8 +28,7 @@ def test_github_issue_driver_methods(mock_github_class):
     mock_comment.created_at = "2023-01-01"
     mock_issue.get_comments.return_value = [mock_comment]
     
-    os.environ["GITHUB_TOKEN"] = "fake"
-    driver = GitHubIssueTaskService("repo")
+    driver = GitHubIssueTaskService("repo", mock_github)
     
     assert driver.get_task("123")["title"] == "Test"
     assert driver.get_events("123")[0]["event"] == "labeled"
