@@ -5,6 +5,12 @@ VENV_PYTHON="./.venv/bin/python"
 
 echo "--- Running Pre-commit Checks ---"
 
+# 0. Check that .env is not staged
+if git diff --cached --name-only | grep -q "^.env$"; then
+    echo "Error: .env file is staged for commit. Please unstage it."
+    exit 1
+fi
+
 # 0. Check for forbidden patterns
 echo "Checking for forbidden patterns (AST)..."
 $VENV_PYTHON scripts/linters/forbidden_patterns_checker.py || {
