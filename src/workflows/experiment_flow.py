@@ -16,7 +16,7 @@ def start_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
 
 def generate_fortune(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Runs pi to generate fortune and comments it."""
-    ticket_id = config["configurable"].get("ticket_id")
+    ticket_id = state.ticket_id
     if not ticket_id:
         raise ValueError("Cannot process task without ticket_id")
 

@@ -20,7 +20,6 @@ def test_hydration_flow_success():
         "configurable": {
             "task_service": mock_task_service,
             "settings": mock_settings,
-            "ticket_id": "1",
             "command_runner": MagicMock(),
         }
     }
