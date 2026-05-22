@@ -38,3 +38,8 @@ These standards ensure our LangGraph workflows remain maintainable, reusable, an
 - **Avoid `unittest.mock.patch` and `pytest` `monkeypatch`**: These make tests fragile, rely on string-based lookups, and hide poor architectural boundaries.
 - **Use Dependency Injection**: Test by injecting real objects or simple mocks into constructors, not by hijacking global names or environment state during test runtime.
 - **Enforcement**: Our pre-commit hook automatically scans for `@patch` and `monkeypatch` (except in `conftest.py`) and will reject commits that introduce them.
+
+### 7. Documentation Standards
+- **Requirement**: All code changes MUST be accompanied by a review of relevant documentation.
+- **Scan**: Before finalizing a PR, developers are responsible for scanning `docs/` and project-level markdown files (`README.md`, `STANDARDS.md`, etc.) to identify needed updates.
+- **Persistence**: Documentation must be updated in the same pull request as the corresponding code changes to ensure they remain synchronized.
