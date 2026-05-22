@@ -23,6 +23,8 @@ class Settings(BaseModel):
     # Helper to resolve Union[str, DriverConfig] to DriverConfig
     def get_driver_config(self, driver_key: str) -> DriverConfig:
         config = self.drivers.get(driver_key)
+        if config is None:
+            raise ValueError(f"Driver {driver_key} not configured")
         if isinstance(config, str):
             return DriverConfig(type=config)
         return config
