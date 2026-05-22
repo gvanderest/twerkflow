@@ -1,8 +1,10 @@
 {
-    "_comment": "The Twerkflow environment context.",
+    // The Twerkflow environment context.
     "context": "twerkflow_dev",
-    "_comment_poll": "Interval in seconds for polling GitHub issues.",
+
+    // Interval in seconds for polling GitHub issues.
     "poll_interval_seconds": 30,
+
     "drivers": {
         "task_service": {
             "type": "github_issues",

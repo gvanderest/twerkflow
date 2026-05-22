@@ -1,6 +1,6 @@
 """Core configuration loading utilities."""
 
-import json
+import json5
 from src.core.settings import Settings, validate_environment
 
 
@@ -18,6 +18,6 @@ def load_settings(path: str = "settings.json") -> Settings:
 
     # 2. Load and Validate JSON
     with open(path, "r") as f:
-        data = json.load(f)
+        data = json5.load(f)
 
     return Settings(**data)
