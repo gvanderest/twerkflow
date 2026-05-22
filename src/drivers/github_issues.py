@@ -6,7 +6,10 @@ from github import Github
 
 class GitHubIssueTaskService(TaskService):
     def __init__(self, repo_name: str):
-        self.github = Github(os.getenv("GITHUB_TOKEN"))
+        token = os.getenv("GITHUB_TOKEN")
+        if not token:
+            raise EnvironmentError("GITHUB_TOKEN not set")
+        self.github = Github(token)
         self.repo = self.github.get_repo(repo_name)
 
     def get_task(self, task_id: str) -> Dict[str, Any]:
@@ -30,13 +33,21 @@ class GitHubIssueTaskService(TaskService):
         issue = self.repo.get_issue(int(task_id))
         # Note: PyGithub events are complex objects, simplify to dict
         return [
-            {"event": e.event, "actor": e.actor.login, "created_at": str(e.created_at)}
+            {
+                "event": e.event,
+                "actor": e.actor.login if e.actor else "unknown",
+                "created_at": str(e.created_at)
+            }
             for e in issue.get_events()
         ]
 
     def get_comments(self, task_id: str) -> List[Dict[str, Any]]:
         issue = self.repo.get_issue(int(task_id))
         return [
-            {"user": c.user.login, "body": c.body, "created_at": str(c.created_at)}
+            {
+                "user": c.user.login,
+                "body": c.body,
+                "created_at": str(c.created_at)
+            }
             for c in issue.get_comments()
         ]
