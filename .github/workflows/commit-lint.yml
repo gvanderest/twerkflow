@@ -1,0 +1,39 @@
+name: Commit Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  commit-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history needed to check all commits in the PR
+
+      - name: Validate commit messages
+        run: |
+          # The range of commits is base (target branch) to head (PR branch)
+          BASE_SHA=${{ github.event.pull_request.base.sha }}
+          HEAD_SHA=${{ github.sha }}
+          
+          echo "Checking commits between $BASE_SHA and $HEAD_SHA"
+          
+          # Get list of commits in the PR
+          COMMITS=$(git log $BASE_SHA..$HEAD_SHA --format=%H)
+          
+          # Make sure the script is executable
+          chmod +x scripts/check_commit_message.sh
+          
+          for commit in $COMMITS; do
+            echo "Checking commit: $commit"
+            # Get just the subject line of the commit
+            git log -n 1 --format=%s $commit > commit_msg.txt
+            
+            # Use our existing script to validate
+            ./scripts/check_commit_message.sh commit_msg.txt || {
+              echo "Commit $commit failed validation."
+              exit 1
+            }
+          done
