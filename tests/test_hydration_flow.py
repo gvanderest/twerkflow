@@ -21,7 +21,6 @@ def test_hydration_flow_success():
             "task_service": mock_task_service,
             "settings": mock_settings,
             "command_runner": MagicMock(),
-            "ticket_id": "1",
         }
     }
 
@@ -39,7 +38,7 @@ def test_hydration_flow_success():
 
 def test_nodes_and_edges():
     """Test individual nodes and conditional edges."""
-    state = TwerkflowState(ticket_id="0", status="pending")
+    state = TwerkflowState(status="pending")
 
     # Test delay_node
     mock_sleep = MagicMock()
