@@ -12,3 +12,6 @@ ignore = ["D107", "D203", "D213"] # Ignore docstring rules that conflict with Go
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.coverage.run]
+omit = ["src/main.py"]

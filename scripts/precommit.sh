@@ -18,6 +18,13 @@ $VENV_PYTHON scripts/linters/forbidden_patterns_checker.py || {
     exit 1
 }
 
+# 0.1 Check src/main.py compliance
+echo "Checking src/main.py compliance..."
+$VENV_PYTHON scripts/linters/main_file_checker.py || {
+    echo "Error: src/main.py contains forbidden logic/definitions."
+    exit 1
+}
+
 # 0.5. Check constructor complexity
 echo "Checking constructor complexity..."
 $VENV_PYTHON scripts/linters/constructor_checker.py || exit 1
@@ -32,6 +39,6 @@ $VENV_PYTHON -m mypy src || exit 1
 
 # 3. Unit Tests
 echo "Running pytest (tests)..."
-$VENV_PYTHON -m pytest --cov=src --cov-fail-under=90 tests || exit 1
+$VENV_PYTHON -m pytest --cov=src --cov-fail-under=95 tests || exit 1
 
 echo "--- Pre-commit Checks Complete ---"
