@@ -6,7 +6,7 @@ all: setup
 # Install dependencies and create venv if it doesn't exist
 setup:
 	@if [ ! -d ".venv" ]; then python -m venv .venv; fi
-	@. .venv/bin/activate && pip install -r requirements.txt
+	@. .venv/bin/activate && pip install -r requirements-twerkflow.txt
 
 # Run pre-commit checks
 check:
