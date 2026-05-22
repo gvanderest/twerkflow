@@ -12,7 +12,11 @@ def test_github_issue_driver_methods():
     mock_issue = MagicMock()
     mock_issue.number = 123
     mock_issue.title = "Test"
-    mock_issue.body = "Body"
+    mock_issue.body = (
+        'Body\n\n<twerkflow-state>\n'
+        '{"ticket_id": "123", "ticket_title": "Test", "tags": [], "status": "pending", "messages": []}\n'
+        '</twerkflow-state>'
+    )
     mock_issue.state = "open"
     mock_issue.labels = [MagicMock(name="tag1")]
     mock_repo.get_issue.return_value = mock_issue
@@ -39,3 +43,16 @@ def test_github_issue_driver_methods():
     driver.update_task("123", {"status": "closed", "labels": ["tag2"]})
     mock_issue.edit.assert_called_with(state="closed")
     mock_issue.set_labels.assert_called_with("tag2")
+
+    # Test state persistence
+    state = driver.get_twerkflow_state("123")
+    assert state is not None
+    assert state.ticket_id == "123"
+
+    state.status = "done"
+    driver.update_twerkflow_state("123", state)
+
+    # Check if issue edit was called with the updated state in body
+    args, kwargs = mock_issue.edit.call_args
+    assert "body" in kwargs
+    assert "done" in kwargs["body"]
