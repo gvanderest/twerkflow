@@ -33,12 +33,22 @@ class HydrationWatcher:
         task_service = self.factory.get_task_service()
         command_runner = self.factory.get_command_runner()
 
-        # Hydration discovery: find un-hydrated issue
+        # Discovery: find issues with twerkflow label
         issues = task_service.list_issues_by_label(tags[0])
-        unhydrated_issues = [i for i in issues if "<twerkflow>" not in i["body"]]
+
+        # Filter: ignore issues labeled 'complete' or 'hilo'
+        candidates = [
+            i
+            for i in issues
+            if not any(label.name in ["twerkflow-complete", "twerkflow-hilo"] for label in i.get("labels", []))
+        ]
+
+        # Find the first one that hasn't been hydrated (doesn't have twerkflow tag in body)
+        # Note: assuming 'task_service.list_issues_by_label' returns objects with labels
+        unhydrated_issues = [i for i in candidates if "<twerkflow>" not in i.get("body", "")]
 
         if not unhydrated_issues:
-            print("--- No un-hydrated issues found. ---")
+            print("--- No new issues to hydrate. ---")
             return None
 
         issue = unhydrated_issues[0]
