@@ -58,6 +58,19 @@ class GitHubIssueTaskService(TaskService):
 
         issue.edit(body=new_body)
 
+    def list_issues_by_label(self, label: str) -> List[Dict[str, Any]]:
+        """Lists issues with a specific label."""
+        issues = self.repo.get_issues(labels=[label])
+        return [
+            {
+                "id": str(issue.number),
+                "title": issue.title,
+                "body": issue.body,
+                "status": issue.state,
+            }
+            for issue in issues
+        ]
+
     def get_events(self, task_id: str) -> List[Dict[str, Any]]:
         """Fetches events for a task from GitHub issues."""
         issue = self.repo.get_issue(int(task_id))

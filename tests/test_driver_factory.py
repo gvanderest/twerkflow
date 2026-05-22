@@ -17,7 +17,11 @@ def test_driver_factory_full():
                 (),
                 {
                     "type": "github_issues",
-                    "params": {"repo_name": "test/repo", "token": "fake"},
+                    "params": {
+                        "repo_name": "test/repo",
+                        "token": "fake",
+                        "label_to_search": "test",
+                    },
                 },
             )()
         elif key == "doc_service":

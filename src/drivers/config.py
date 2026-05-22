@@ -10,6 +10,7 @@ class GitHubIssueConfig(BaseModel):
     """Configuration for GitHub issues."""
 
     repo_name: str
+    label_to_search: str
     token: Optional[SecretStr] = None
 
     @model_validator(mode="before")

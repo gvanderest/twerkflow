@@ -22,6 +22,10 @@ class DummyTask(TaskService):
         """Mock get_comments."""
         return []
 
+    def list_issues_by_label(self, label):
+        """Mock list_issues_by_label."""
+        return []
+
 
 class DummyDoc(DocService):
     """Dummy implementation of DocService for testing."""

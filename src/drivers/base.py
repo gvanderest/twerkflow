@@ -27,6 +27,11 @@ class TaskService(ABC):
         """Fetches comments for a task."""
         pass
 
+    @abstractmethod
+    def list_issues_by_label(self, label: str) -> List[Dict[str, Any]]:
+        """Lists issues with a specific label."""
+        pass
+
 
 class DocService(ABC):
     """Abstract base class for document services."""
