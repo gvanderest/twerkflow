@@ -22,7 +22,7 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
     issues = task_service.list_issues_by_label(label)
 
     # Filter for un-hydrated issues
-    unhydrated_issues = [i for i in issues if "<twerkflow-state>" not in i["body"]]
+    unhydrated_issues = [i for i in issues if "<twerkflow>" not in i["body"]]
 
     if not unhydrated_issues:
         print("--- No un-hydrated issues found. ---")
@@ -32,14 +32,15 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
         issue = unhydrated_issues[0]
         print(f"--- Hydrating issue: {issue['id']} ---")
 
-        # Populate state
-        state.ticket_id = issue["id"]
-        state.ticket_title = issue["title"]
-        state.status = "hydrated"
+        # Populate state with discovery
+        # Inject ticket_id into config dynamically
+        config["configurable"]["ticket_id"] = issue["id"]
 
         # PERSIST: Update the issue body with the state
-        task_service.update_twerkflow_state(state.ticket_id, state)
+        task_service.update_twerkflow_state(issue["id"], state)
         print(f"--- Persisted state to issue {issue['id']} ---")
+
+        state.status = "hydrated"
 
     return state
 
