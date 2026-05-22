@@ -14,6 +14,11 @@ def test_hydration_watcher_run_once():
     # Mock invoke result
     mock_app.invoke.return_value = {"status": "hydrated"}
 
+    # Mock issue listing
+    mock_task_service.list_issues_by_label.return_value = [
+        {"id": "1", "title": "Test Issue", "body": "Body", "status": "open"}
+    ]
+
     # Mock settings
     mock_settings = MagicMock()
     mock_settings.poll_interval_seconds = 0

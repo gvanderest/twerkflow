@@ -10,37 +10,19 @@ from src.workflows.experiment_flow import generate_fortune
 
 
 def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
-    """Node: find tagged issues and hydrate state."""
+    """Node: persist initial state to the found issue."""
     task_service: TaskService = config["configurable"]["task_service"]
-    settings = load_settings()
-    label = settings.get_driver_config("task_service").params.get("label_to_search")
+    ticket_id = config["configurable"].get("ticket_id")
 
-    if not label:
-        raise ValueError("label_to_search not configured for task_service")
+    if not ticket_id:
+        raise ValueError("Cannot hydrate issue without ticket_id")
 
-    print(f"--- Hydrating issues with label: {label} ---")
+    print(f"--- Persisting initial state to issue {ticket_id} ---")
 
-    issues = task_service.list_issues_by_label(label)
+    # PERSIST: Update the issue body with the state
+    task_service.update_twerkflow_state(ticket_id, state)
 
-    # Filter for un-hydrated issues
-    unhydrated_issues = [i for i in issues if "<twerkflow>" not in i["body"]]
-
-    if not unhydrated_issues:
-        print("--- No un-hydrated issues found. ---")
-        state.status = "no_issues"
-    else:
-        # Take the first one found
-        issue = unhydrated_issues[0]
-        print(f"--- Hydrating issue: {issue['id']} ---")
-
-        # Populate state with discovery
-        state.context["ticket_id"] = issue["id"]
-
-        # PERSIST: Update the issue body with the state
-        task_service.update_twerkflow_state(issue["id"], state)
-        print(f"--- Persisted state to issue {issue['id']} ---")
-
-        state.status = "starting"
+    state.status = "starting"
 
     return state
 
