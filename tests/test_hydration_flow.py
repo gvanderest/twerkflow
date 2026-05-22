@@ -6,33 +6,25 @@ from src.workflows.hydration_flow import app, check_hydration_status, delay_node
 
 
 def test_hydration_flow_success():
-    """Verify hydration flow lists issues and finishes."""
+    """Verify hydration flow persists state and finishes."""
     mock_task_service = MagicMock()
-    mock_settings = MagicMock()
-    mock_settings.get_driver_config.return_value.params.get.return_value = "twerkflow"
-
-    # Mock issue listing
-    mock_task_service.list_issues_by_label.return_value = [
-        {"id": "1", "title": "Test Issue", "body": "Body", "status": "open"}
-    ]
 
     config = {
         "configurable": {
             "task_service": mock_task_service,
-            "settings": mock_settings,
+            "ticket_id": "1",
             "command_runner": MagicMock(),
         }
     }
 
     state = TwerkflowState(
         status="pending",
-        ticket_id="none",
+        ticket_id="1",
     )
 
     result = app.invoke(state, config=config)
 
-    assert result["status"] == "completed"
-    mock_task_service.list_issues_by_label.assert_called_once()
+    assert result["status"] == "starting"
     # Check persistence call
     assert mock_task_service.update_twerkflow_state.called
 

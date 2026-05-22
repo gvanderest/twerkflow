@@ -31,10 +31,22 @@ class HydrationWatcher:
     def run_once(self, ticket_id: Optional[str], tags: list):
         """Executes the workflow once for a given ticket."""
         task_service = self.factory.get_task_service()
-        config = {"configurable": {"task_service": task_service, "tags": tags}}
 
-        # Hydration flow doesn't need ticket_id initially
-        initial_state = TwerkflowState(status="pending", ticket_id="uninitialized")
+        # Hydration discovery: find un-hydrated issue
+        issues = task_service.list_issues_by_label(tags[0])
+        unhydrated_issues = [i for i in issues if "<twerkflow>" not in i["body"]]
+
+        if not unhydrated_issues:
+            print("--- No un-hydrated issues found. ---")
+            return None
+
+        issue = unhydrated_issues[0]
+        print(f"--- Hydrating issue: {issue['id']} ---")
+
+        config = {"configurable": {"task_service": task_service, "tags": tags, "ticket_id": issue["id"]}}
+
+        # State creation is now deferred until we have an ID
+        initial_state = TwerkflowState(status="starting", ticket_id=issue["id"])
 
         result = self.app.invoke(initial_state, config=config)
         print(f"Hydration Cycle Result: {result}")
