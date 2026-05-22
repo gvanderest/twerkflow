@@ -25,7 +25,7 @@ These standards ensure our LangGraph workflows remain maintainable, reusable, an
 - **No Hidden Dependencies**: Drivers and nodes should not initialize external clients (e.g., `Github()`, `asana.Client()`) within their `__init__` methods.
 - **Testability**: By injecting dependencies, we enable seamless mocking during unit tests without requiring complex `unittest.mock.patch` calls.
 
-## 6. Testing Philosophy: No Patching
-- **Avoid `unittest.mock.patch`**: Patching makes tests fragile, relies on fragile string-based imports, and hides poor architectural boundaries.
-- **Use Dependency Injection**: Test by injecting real objects or simple mocks into constructors, not by hijacking global names during test runtime.
-- **Enforcement**: Our pre-commit hook automatically scans for `@patch` and will reject commits that introduce new patching usage.
+## 6. Testing Philosophy: No Patching / No Monkeypatching
+- **Avoid `unittest.mock.patch` and `pytest` `monkeypatch`**: These make tests fragile, rely on string-based lookups, and hide poor architectural boundaries.
+- **Use Dependency Injection**: Test by injecting real objects or simple mocks into constructors, not by hijacking global names or environment state during test runtime.
+- **Enforcement**: Our pre-commit hook automatically scans for `@patch` and `monkeypatch` (except in `conftest.py`) and will reject commits that introduce them.

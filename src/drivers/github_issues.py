@@ -1,7 +1,5 @@
 from src.drivers.base import TaskService
-from src.drivers.config import GitHubIssueConfig
 from typing import Dict, Any, List
-from github import Github
 
 
 class GitHubIssueTaskService(TaskService):
@@ -15,7 +13,7 @@ class GitHubIssueTaskService(TaskService):
             "title": issue.title,
             "body": issue.body,
             "status": issue.state,
-            "tags": [label.name for label in issue.labels]
+            "tags": [label.name for label in issue.labels],
         }
 
     def update_task(self, task_id: str, data: Dict[str, Any]) -> None:
@@ -32,7 +30,7 @@ class GitHubIssueTaskService(TaskService):
             {
                 "event": e.event,
                 "actor": e.actor.login if e.actor else "unknown",
-                "created_at": str(e.created_at)
+                "created_at": str(e.created_at),
             }
             for e in issue.get_events()
         ]
@@ -40,10 +38,6 @@ class GitHubIssueTaskService(TaskService):
     def get_comments(self, task_id: str) -> List[Dict[str, Any]]:
         issue = self.repo.get_issue(int(task_id))
         return [
-            {
-                "user": c.user.login,
-                "body": c.body,
-                "created_at": str(c.created_at)
-            }
+            {"user": c.user.login, "body": c.body, "created_at": str(c.created_at)}
             for c in issue.get_comments()
         ]

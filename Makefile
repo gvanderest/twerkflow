@@ -8,9 +8,9 @@ setup:
 	@if [ ! -d ".venv" ]; then python -m venv .venv; fi
 	@. .venv/bin/activate && pip install -r requirements-twerkflow.txt
 
-# Run pre-commit checks
-check:
-	@. .venv/bin/activate && ./scripts/precommit.sh
+# Format code
+format:
+	@. .venv/bin/activate && black src tests
 
 # Run the application
 start:
