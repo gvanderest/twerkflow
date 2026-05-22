@@ -1,16 +1,9 @@
 from src.drivers.base import TaskService
 from typing import Dict, Any, List
-import os
-from github import Github
-
 
 class GitHubIssueTaskService(TaskService):
-    def __init__(self, repo_name: str):
-        token = os.getenv("GITHUB_TOKEN")
-        if not token:
-            raise EnvironmentError("GITHUB_TOKEN not set")
-        self.github = Github(token)
-        self.repo = self.github.get_repo(repo_name)
+    def __init__(self, repo_name: str, github_client: Any):
+        self.repo = github_client.get_repo(repo_name)
 
     def get_task(self, task_id: str) -> Dict[str, Any]:
         issue = self.repo.get_issue(int(task_id))
