@@ -1,9 +1,12 @@
+"""Tests for DriverFactory."""
+
 from unittest.mock import MagicMock
 import pytest
 from src.core.driver_factory import DriverFactory, DriverFactoryConfig
 
 
 def test_driver_factory_full():
+    """Verifies full DriverFactory configuration and instantiation."""
     # Mock settings
     mock_settings = MagicMock()
 
@@ -68,10 +71,9 @@ def test_driver_factory_full():
 
 
 def test_driver_factory_unknown_task_driver():
+    """Verifies unknown task driver raises ValueError."""
     mock_settings = MagicMock()
-    mock_settings.get_driver_config.return_value = type(
-        "Config", (), {"type": "unknown", "params": {}}
-    )()
+    mock_settings.get_driver_config.return_value = type("Config", (), {"type": "unknown", "params": {}})()
 
     factory = DriverFactory(config=DriverFactoryConfig(settings=mock_settings))
     with pytest.raises(ValueError, match="Unknown task driver"):
@@ -79,10 +81,9 @@ def test_driver_factory_unknown_task_driver():
 
 
 def test_driver_factory_unknown_doc_driver():
+    """Verifies unknown doc driver raises ValueError."""
     mock_settings = MagicMock()
-    mock_settings.get_driver_config.return_value = type(
-        "Config", (), {"type": "unknown", "params": {}}
-    )()
+    mock_settings.get_driver_config.return_value = type("Config", (), {"type": "unknown", "params": {}})()
 
     factory = DriverFactory(config=DriverFactoryConfig(settings=mock_settings))
     with pytest.raises(ValueError, match="Unknown doc driver"):
@@ -90,10 +91,9 @@ def test_driver_factory_unknown_doc_driver():
 
 
 def test_driver_factory_unknown_pr_driver():
+    """Verifies unknown PR driver raises ValueError."""
     mock_settings = MagicMock()
-    mock_settings.get_driver_config.return_value = type(
-        "Config", (), {"type": "unknown", "params": {}}
-    )()
+    mock_settings.get_driver_config.return_value = type("Config", (), {"type": "unknown", "params": {}})()
 
     factory = DriverFactory(config=DriverFactoryConfig(settings=mock_settings))
     with pytest.raises(ValueError, match="Unknown pr driver"):
@@ -101,6 +101,7 @@ def test_driver_factory_unknown_pr_driver():
 
 
 def test_driver_factory_missing_token():
+    """Verifies missing token raises ValueError."""
     mock_settings = MagicMock()
     mock_settings.get_driver_config.return_value = type(
         "Config",
@@ -117,9 +118,7 @@ def test_driver_factory_missing_token():
     mock_config.repo_name = "test/repo"
 
     factory = DriverFactory(
-        config=DriverFactoryConfig(
-            settings=mock_settings, config_class=lambda **kwargs: mock_config
-        )
+        config=DriverFactoryConfig(settings=mock_settings, config_class=lambda **kwargs: mock_config)
     )
     # The error comes from GitHubIssueConfig validation
     with pytest.raises(ValueError):

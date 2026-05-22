@@ -1,8 +1,11 @@
+"""Tests for GitHub issues driver."""
+
 from unittest.mock import MagicMock
 from src.drivers.github_issues import GitHubIssueTaskService
 
 
 def test_github_issue_driver_methods():
+    """Verifies all GitHubIssueTaskService methods."""
     mock_repo = MagicMock()
 
     # Mock issue

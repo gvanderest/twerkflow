@@ -1,9 +1,13 @@
+"""Main entry point for the Twerkflow."""
+
 from typing import Any
-from src.core.state import TwerkflowState
+
 from src.core.driver_factory import DriverFactory
+from src.core.state import TwerkflowState
 
 
 def run_twerkflow(ticket_id: str, tags: list, app: Any, factory: DriverFactory):
+    """Executes the Twerkflow workflow for a given ticket."""
     task_service = factory.get_task_service()
 
     config = {"configurable": {"task_service": task_service}}

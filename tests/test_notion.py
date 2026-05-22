@@ -1,8 +1,11 @@
+"""Tests for Notion driver."""
+
 import pytest
 from src.drivers.notion import NotionDocService
 
 
 def test_notion_driver():
+    """Verifies that NotionDocService methods raise NotImplementedError."""
     service = NotionDocService()
     with pytest.raises(NotImplementedError):
         service.get_doc("1")

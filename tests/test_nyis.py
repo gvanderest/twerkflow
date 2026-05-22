@@ -1,3 +1,5 @@
+"""Tests for NYI (Not Yet Implemented) drivers."""
+
 import pytest
 from src.drivers.asana import AsanaTaskService
 from src.drivers.github_pr import GitHubPRService
@@ -6,6 +8,7 @@ from src.drivers.notion import NotionDocService
 
 
 def test_drivers_instantiation():
+    """Verifies that NYI drivers raise NotImplementedError."""
     # Test instantiation of NYI drivers
     with pytest.raises(NotImplementedError):
         AsanaTaskService().get_task("1")

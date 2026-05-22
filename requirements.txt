@@ -1,8 +1,7 @@
 langgraph
 PyGithub
 pydantic
-flake8
 mypy
 pytest
-black
 pytest-cov
+ruff

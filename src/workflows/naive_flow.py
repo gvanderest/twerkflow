@@ -1,18 +1,20 @@
-from langgraph.graph import StateGraph, END
+"""Defines the naive workflow graph."""
+
+from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnableConfig
 from src.core.state import TwerkflowState
 from src.drivers.base import TaskService
 
 
-# Naive gate: check if 'twerkflow' tag exists
-def gate_check_tag(state: TwerkflowState, config: RunnableConfig):
+def gate_check_tag(state: TwerkflowState, config: RunnableConfig) -> str:
+    """Naive gate: check if 'twerkflow' tag exists."""
     if "twerkflow" in state.tags:
         return "process"
     return "abort"
 
 
-# Agentic node: uses the injected TaskService
-def process_task(state: TwerkflowState, config: RunnableConfig):
+def process_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
+    """Agentic node: uses the injected TaskService to process a task."""
     task_service: TaskService = config["configurable"]["task_service"]
     print(f"--- Real Driver Activity: Fetching task {state.ticket_id} ---")
 
@@ -28,8 +30,8 @@ def process_task(state: TwerkflowState, config: RunnableConfig):
     return state
 
 
-# Node: abort
-def abort_task(state: TwerkflowState, config: RunnableConfig):
+def abort_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
+    """Node: aborts the task processing."""
     print(f"Aborting task {state.ticket_id}...")
     state.status = "aborted"
     state.messages.append("Abort triggered")
@@ -42,9 +44,7 @@ workflow = StateGraph(TwerkflowState)
 workflow.add_node("process", process_task)
 workflow.add_node("abort", abort_task)
 
-workflow.set_conditional_entry_point(
-    gate_check_tag, {"process": "process", "abort": "abort"}
-)
+workflow.set_conditional_entry_point(gate_check_tag, {"process": "process", "abort": "abort"})
 
 workflow.add_edge("process", END)
 workflow.add_edge("abort", END)
