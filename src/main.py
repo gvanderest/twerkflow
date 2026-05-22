@@ -1,8 +1,14 @@
 from src.workflows.naive_flow import app
 from src.core.state import TwerkflowState
+from src.core.driver_factory import DriverFactory
 
 
 def run_twerkflow(ticket_id: str, tags: list):
+    factory = DriverFactory()
+    task_service = factory.get_task_service()
+    
+    config = {"configurable": {"task_service": task_service}}
+    
     initial_state = TwerkflowState(
         ticket_id=ticket_id,
         ticket_title="Example Ticket",
@@ -11,7 +17,7 @@ def run_twerkflow(ticket_id: str, tags: list):
         messages=[]
     )
 
-    result = app.invoke(initial_state)
+    result = app.invoke(initial_state, config=config)
     print(f"Final state: {result}")
 
 

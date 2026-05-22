@@ -1,7 +1,12 @@
 {
     "context": "twerkflow_dev",
     "drivers": {
-        "task_service": "github_issues",
+        "task_service": {
+            "type": "github_issues",
+            "params": {
+                "repo_name": "gvanderest/twerkflow"
+            }
+        },
         "doc_service": "github_wiki",
         "pr_service": "github_pr"
     }
