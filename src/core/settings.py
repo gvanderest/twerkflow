@@ -2,17 +2,21 @@ import os
 from typing import Dict, Any, Union
 from pydantic import BaseModel, Field, field_validator
 
+
 class DriverConfig(BaseModel):
     type: str
     params: Dict[str, Any] = Field(default_factory=dict)
 
+
 class Settings(BaseModel):
     context: str
     drivers: Dict[str, Union[str, DriverConfig]]
-    
+
     @field_validator("drivers")
     @classmethod
-    def validate_drivers(cls, v: Dict[str, Union[str, DriverConfig]]) -> Dict[str, Union[str, DriverConfig]]:
+    def validate_drivers(
+        cls, v: Dict[str, Union[str, DriverConfig]]
+    ) -> Dict[str, Union[str, DriverConfig]]:
         # Basic check: Ensure we have required drivers
         required = ["task_service", "doc_service", "pr_service"]
         for r in required:
@@ -29,9 +33,12 @@ class Settings(BaseModel):
             return DriverConfig(type=config)
         return config
 
+
 def validate_environment():
     """Validates that all required environment variables are present."""
-    required_vars = ["GITHUB_TOKEN"] # Expand as we add drivers
+    required_vars = ["GITHUB_TOKEN"]  # Expand as we add drivers
     missing = [var for var in required_vars if not os.getenv(var)]
     if missing:
-        raise EnvironmentError(f"Missing required environment variables: {', '.join(missing)}")
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing)}"
+        )

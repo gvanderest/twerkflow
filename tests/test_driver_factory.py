@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 import pytest
-from src.core.driver_factory import DriverFactory
+from src.core.driver_factory import DriverFactory, DriverFactoryConfig
 
 
 def test_driver_factory_full():
@@ -53,13 +53,14 @@ def test_driver_factory_full():
         return mock_pr
 
     # Use Dependency Injection
-    factory = DriverFactory(
+    factory_config = DriverFactoryConfig(
         settings=mock_settings,
         task_service_class=task_service_factory,
         doc_service_class=doc_service_factory,
         pr_service_class=pr_service_factory,
         github_client_class=lambda token: mock_github_client,
     )
+    factory = DriverFactory(config=factory_config)
 
     assert factory.get_task_service() == mock_task
     assert factory.get_doc_service() == mock_notion
@@ -72,7 +73,7 @@ def test_driver_factory_unknown_task_driver():
         "Config", (), {"type": "unknown", "params": {}}
     )()
 
-    factory = DriverFactory(settings=mock_settings)
+    factory = DriverFactory(config=DriverFactoryConfig(settings=mock_settings))
     with pytest.raises(ValueError, match="Unknown task driver"):
         factory.get_task_service()
 
@@ -83,7 +84,7 @@ def test_driver_factory_unknown_doc_driver():
         "Config", (), {"type": "unknown", "params": {}}
     )()
 
-    factory = DriverFactory(settings=mock_settings)
+    factory = DriverFactory(config=DriverFactoryConfig(settings=mock_settings))
     with pytest.raises(ValueError, match="Unknown doc driver"):
         factory.get_doc_service()
 
@@ -94,7 +95,7 @@ def test_driver_factory_unknown_pr_driver():
         "Config", (), {"type": "unknown", "params": {}}
     )()
 
-    factory = DriverFactory(settings=mock_settings)
+    factory = DriverFactory(config=DriverFactoryConfig(settings=mock_settings))
     with pytest.raises(ValueError, match="Unknown pr driver"):
         factory.get_pr_service()
 
@@ -113,9 +114,12 @@ def test_driver_factory_missing_token():
     # Mock Config class
     mock_config = MagicMock()
     mock_config.token = None
+    mock_config.repo_name = "test/repo"
 
     factory = DriverFactory(
-        settings=mock_settings, config_class=lambda **kwargs: mock_config
+        config=DriverFactoryConfig(
+            settings=mock_settings, config_class=lambda **kwargs: mock_config
+        )
     )
     # The error comes from GitHubIssueConfig validation
     with pytest.raises(ValueError):
