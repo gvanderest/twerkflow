@@ -10,14 +10,19 @@ from src.drivers.base import TaskService
 
 def gate_check_tag(state: TwerkflowState, config: RunnableConfig) -> str:
     """Gate: check if 'twerkflow' tag exists."""
-    if "twerkflow" in state.tags:
+    tags = config["configurable"].get("tags", [])
+    if "twerkflow" in tags:
         return "process"
     return "abort"
 
 
 def process_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Agentic node: processes a task."""
-    print(f"--- Processing task {state.ticket_id} ---")
+    ticket_id = config["configurable"].get("ticket_id")
+    if not ticket_id:
+        raise ValueError("Cannot process task without ticket_id")
+
+    print(f"--- Processing task {ticket_id} ---")
     state.status = "processing"
     state.messages.append("Started processing")
     return state
@@ -25,11 +30,12 @@ def process_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowStat
 
 def check_approval(state: TwerkflowState, config: RunnableConfig) -> str:
     """Helper: checks for approval."""
-    if not state.ticket_id:
+    ticket_id = config["configurable"].get("ticket_id")
+    if not ticket_id:
         return "pending"
 
     task_service: TaskService = config["configurable"]["task_service"]
-    comments = task_service.get_comments(state.ticket_id)
+    comments = task_service.get_comments(ticket_id)
     for comment in comments:
         if "twerkflow approve" in comment["body"].lower():
             return "approved"
@@ -38,14 +44,17 @@ def check_approval(state: TwerkflowState, config: RunnableConfig) -> str:
 
 def polling_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Polling node: checks for approval, sleeps if not approved."""
+    ticket_id = config["configurable"].get("ticket_id")
+    if not ticket_id:
+        raise ValueError("Cannot poll without ticket_id")
+
     # DI: Get dependencies from config or injected services
-    # We use .get() to allow defaults, ensuring backward compatibility if config is missing
     settings = config["configurable"].get("settings") or load_settings()
     sleep_func = config["configurable"].get("sleep_func", time.sleep)
 
     interval = settings.poll_interval_seconds
 
-    print(f"--- Polling for approval for task {state.ticket_id} ---")
+    print(f"--- Polling for approval for task {ticket_id} ---")
 
     action = check_approval(state, config)
     if action == "approved":
@@ -67,7 +76,8 @@ def check_polling_status(state: TwerkflowState) -> str:
 
 def finalize_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Node: finalizes the task."""
-    print(f"--- Finalizing task {state.ticket_id} ---")
+    ticket_id = config["configurable"].get("ticket_id")
+    print(f"--- Finalizing task {ticket_id} ---")
     state.status = "done"
     state.messages.append("Task finalized")
     return state
@@ -75,7 +85,8 @@ def finalize_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSta
 
 def abort_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Node: aborts the task processing."""
-    print(f"Aborting task {state.ticket_id}...")
+    ticket_id = config["configurable"].get("ticket_id")
+    print(f"Aborting task {ticket_id}...")
     state.status = "aborted"
     state.messages.append("Abort triggered")
     return state

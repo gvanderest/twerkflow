@@ -19,15 +19,15 @@ class MockSettings:
 def test_hilo_flow_abort():
     """Verify abort behavior."""
     mock_task_service = MagicMock()
-    config = {"configurable": {"task_service": mock_task_service}}
+    config = {
+        "configurable": {
+            "task_service": mock_task_service,
+            "ticket_id": "123",
+            "tags": ["other"],
+        }
+    }
 
-    state = TwerkflowState(
-        ticket_id="123",
-        ticket_title="Test",
-        tags=["other"],
-        status="pending",
-        messages=[],
-    )
+    state = TwerkflowState(status="pending", messages=[])
 
     result = app.invoke(state, config=config)
     # result is a dict, need to get the final state
@@ -52,13 +52,12 @@ def test_hilo_flow_approval():
             "task_service": mock_task_service,
             "sleep_func": mock_sleep,
             "settings": mock_settings,
+            "ticket_id": "123",
+            "tags": ["twerkflow"],
         }
     }
 
     state = TwerkflowState(
-        ticket_id="123",
-        ticket_title="Test",
-        tags=["twerkflow"],
         status="pending",
         messages=[],
     )

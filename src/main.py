@@ -13,12 +13,15 @@ def run_twerkflow(ticket_id: Optional[str], tags: list, app: Any, factory: Drive
     """Executes the Twerkflow workflow for a given ticket."""
     task_service = factory.get_task_service()
 
-    config = {"configurable": {"task_service": task_service}}
+    config = {
+        "configurable": {
+            "task_service": task_service,
+            "ticket_id": ticket_id,
+            "tags": tags,
+        }
+    }
 
     initial_state = TwerkflowState(
-        ticket_id=ticket_id,
-        ticket_title="Example Ticket",
-        tags=tags,
         status="pending",
         messages=[],
     )
