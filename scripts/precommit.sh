@@ -6,15 +6,11 @@ VENV_PYTHON="./.venv/bin/python"
 echo "--- Running Pre-commit Checks ---"
 
 # 0. Check for forbidden patterns
-echo "Checking for forbidden patterns..."
-if grep -r -E "@patch" src tests; then
-    echo "Error: @patch usage is forbidden. Please refactor to use Dependency Injection."
+echo "Checking for forbidden patterns (AST)..."
+$VENV_PYTHON scripts/linters/forbidden_patterns_checker.py || {
+    echo "Error: Forbidden patterns found (patch/monkeypatch). Please refactor to use Dependency Injection."
     exit 1
-fi
-if grep -r -E "monkeypatch" src tests --exclude-dir=__pycache__ | grep -v "conftest.py"; then
-    echo "Error: monkeypatch usage is forbidden in tests (except conftest.py). Please refactor to use Dependency Injection."
-    exit 1
-fi
+}
 
 # 0.5. Check constructor complexity
 echo "Checking constructor complexity..."
