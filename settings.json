@@ -1,4 +1,5 @@
 {
+    "poll_interval_seconds": 30,
     "context": "twerkflow_dev",
     "drivers": {
         "task_service": {
