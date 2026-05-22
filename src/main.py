@@ -26,12 +26,12 @@ def run_twerkflow(ticket_id: str, tags: list, app: Any, factory: DriverFactory):
 
 
 if __name__ == "__main__":
-    from src.workflows.naive_flow import app
+    from src.workflows.hydration_flow import app
 
-    # Test 1: Tagged (Should process)
-    print("--- Test 1: Tagged ---")
-    run_twerkflow("123", ["twerkflow", "design"], app, DriverFactory())
+    # Test: Run hydration (should find tagged issues)
+    print("--- Test: Hydration Flow ---")
 
-    # Test 2: Untagged (Should abort)
-    print("\n--- Test 2: Untagged ---")
-    run_twerkflow("456", ["something-else"], app, DriverFactory())
+    # We pass dummy ID/tags as the hydration flow just needs a state object to start,
+    # then it overrides it with the issues it finds.
+    factory = DriverFactory()
+    run_twerkflow("0", ["twerkflow"], app, factory)
