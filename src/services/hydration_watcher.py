@@ -48,7 +48,11 @@ class HydrationWatcher:
         unhydrated_issues = [i for i in candidates if "<twerkflow>" not in i.get("body", "")]
 
         if not unhydrated_issues:
-            print("--- No new issues to hydrate. ---")
+            # Check if there are any issues at all
+            if candidates:
+                print(f"--- All {len(candidates)} issues are already hydrated. ---")
+            else:
+                print("--- No issues found with tag 'twerkflow'. ---")
             return None
 
         issue = unhydrated_issues[0]
