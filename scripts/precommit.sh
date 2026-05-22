@@ -5,6 +5,13 @@
 
 echo "--- Running Pre-commit Checks ---"
 
+# 0. Check for forbidden patterns
+echo "Checking for forbidden patterns..."
+if grep -r "@patch" src tests; then
+    echo "Error: @patch usage is forbidden. Please refactor to use Dependency Injection."
+    exit 1
+fi
+
 # 1. Linting
 echo "Running flake8 (linting)..."
 python -m flake8 --max-line-length=120 src tests || echo "flake8 issues found, but continuing."
