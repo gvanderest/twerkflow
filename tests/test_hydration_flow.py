@@ -24,7 +24,7 @@ def test_hydration_flow_success():
 
     result = app.invoke(state, config=config)
 
-    assert result["status"] == "starting"
+    assert result["status"] == "completed"
     # Check persistence call
     assert mock_task_service.update_twerkflow_state.called
 
