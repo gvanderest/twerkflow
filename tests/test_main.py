@@ -1,7 +1,7 @@
 """Tests for main entry point."""
 
 from unittest.mock import MagicMock
-from src.main import run_watcher_app
+from src.services.hydration_runner import run_watcher_app
 
 
 def test_run_watcher_app():
