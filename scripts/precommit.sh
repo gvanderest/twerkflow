@@ -20,9 +20,9 @@ fi
 echo "Checking constructor complexity..."
 $VENV_PYTHON scripts/linters/constructor_checker.py || exit 1
 
-# 1. Linting
-echo "Running flake8 (linting)..."
-$VENV_PYTHON -m flake8 --max-line-length=120 src tests || { echo "Linting failed. Run 'make format' to fix style issues."; exit 1; }
+# 1. Linting & Docstrings
+echo "Running ruff (linting & docstrings)..."
+$VENV_PYTHON -m ruff check src tests || { echo "Linting failed. Run 'make format' to fix style issues."; exit 1; }
 
 # 2. Typechecking
 echo "Running mypy (typechecking)..."

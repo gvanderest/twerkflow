@@ -1,9 +1,12 @@
+"""Tests for naive workflow nodes."""
+
 from unittest.mock import MagicMock
 from src.workflows.naive_flow import gate_check_tag, process_task, abort_task
 from src.core.state import TwerkflowState
 
 
 def test_naive_flow_nodes():
+    """Verifies naive workflow node logic."""
     state = TwerkflowState(ticket_id="1", ticket_title="Test", tags=["twerkflow"])
     config = {"configurable": {"task_service": MagicMock()}}
 

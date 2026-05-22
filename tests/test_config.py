@@ -1,9 +1,12 @@
-import pytest
+"""Tests for configuration loading."""
+
 import os
+import pytest
 from src.core.config_loader import load_settings
 
 
 def test_load_settings_success(tmp_path):
+    """Verifies settings load successfully with a valid JSON file."""
     # Create temp settings.json
     d = tmp_path / "settings.json"
     d.write_text(
@@ -17,6 +20,7 @@ def test_load_settings_success(tmp_path):
 
 
 def test_settings_missing_driver():
+    """Verifies that missing required drivers raise ValueError."""
     from src.core.settings import Settings
 
     with pytest.raises(ValueError, match="Missing required driver"):
@@ -24,6 +28,7 @@ def test_settings_missing_driver():
 
 
 def test_settings_invalid_config():
+    """Verifies that invalid driver config raises ValueError."""
     from src.core.settings import Settings
 
     with pytest.raises(ValueError, match="Driver pr_service_missing not configured"):

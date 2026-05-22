@@ -1,0 +1,14 @@
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint]
+# Enable standard linting rules + docstring rules (D)
+select = ["F", "E", "W", "D", "B"]
+ignore = ["D107", "D203", "D213"] # Ignore docstring rules that conflict with Google style
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

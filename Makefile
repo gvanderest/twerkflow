@@ -10,7 +10,7 @@ setup:
 
 # Format code
 format:
-	@. .venv/bin/activate && black src tests
+	@. .venv/bin/activate && ruff format src tests
 
 # Run the application
 start:

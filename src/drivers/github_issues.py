@@ -1,12 +1,19 @@
+"""Provides a service to interact with GitHub issues."""
+
+from typing import Any, Dict, List
+
 from src.drivers.base import TaskService
-from typing import Dict, Any, List
 
 
 class GitHubIssueTaskService(TaskService):
-    def __init__(self, repo):
+    """Service to interact with GitHub issues."""
+
+    def __init__(self, repo: Any):
+        """Initializes the GitHubIssueTaskService."""
         self.repo = repo
 
     def get_task(self, task_id: str) -> Dict[str, Any]:
+        """Fetches a task from GitHub issues."""
         issue = self.repo.get_issue(int(task_id))
         return {
             "id": str(issue.number),
@@ -17,6 +24,7 @@ class GitHubIssueTaskService(TaskService):
         }
 
     def update_task(self, task_id: str, data: Dict[str, Any]) -> None:
+        """Updates a task in GitHub issues."""
         issue = self.repo.get_issue(int(task_id))
         if "status" in data:
             issue.edit(state=data["status"])
@@ -24,6 +32,7 @@ class GitHubIssueTaskService(TaskService):
             issue.set_labels(*data["labels"])
 
     def get_events(self, task_id: str) -> List[Dict[str, Any]]:
+        """Fetches events for a task from GitHub issues."""
         issue = self.repo.get_issue(int(task_id))
         # Note: PyGithub events are complex objects, simplify to dict
         return [
@@ -36,8 +45,6 @@ class GitHubIssueTaskService(TaskService):
         ]
 
     def get_comments(self, task_id: str) -> List[Dict[str, Any]]:
+        """Fetches comments for a task from GitHub issues."""
         issue = self.repo.get_issue(int(task_id))
-        return [
-            {"user": c.user.login, "body": c.body, "created_at": str(c.created_at)}
-            for c in issue.get_comments()
-        ]
+        return [{"user": c.user.login, "body": c.body, "created_at": str(c.created_at)} for c in issue.get_comments()]
