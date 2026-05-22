@@ -16,25 +16,26 @@ from src.workflows.hilo_flow import (
 
 def test_hilo_nodes():
     """Verify individual node logic for HILO flow."""
-    state = TwerkflowState(status="pending", messages=[])
+    state = TwerkflowState()
     config = {"configurable": {"ticket_id": "123"}}
 
     # Test finalize_task
+    state = TwerkflowState(status="pending", messages=[])
     new_state = finalize_task(state, config)
     assert new_state.status == "done"
-    assert "Task finalized" in new_state.messages
+    assert new_state.messages == ["Task finalized"]
 
     # Test abort_task
-    state.status = "pending"
+    state = TwerkflowState(status="pending", messages=[])
     new_state = abort_task(state, config)
     assert new_state.status == "aborted"
-    assert "Abort triggered" in new_state.messages
+    assert new_state.messages == ["Abort triggered"]
 
     # Test process_task
-    state.status = "pending"
+    state = TwerkflowState(status="pending", messages=[])
     new_state = process_task(state, config)
     assert new_state.status == "processing"
-    assert "Started processing" in new_state.messages
+    assert new_state.messages == ["Started processing"]
 
     # Test process_task error
     with pytest.raises(ValueError, match="Cannot process task without ticket_id"):
