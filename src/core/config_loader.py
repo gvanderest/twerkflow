@@ -1,6 +1,7 @@
 """Core configuration loading utilities."""
 
 import json5
+from dotenv import load_dotenv
 from src.core.settings import Settings, validate_environment
 
 
@@ -13,6 +14,9 @@ def load_settings(path: str = "settings.json") -> Settings:
     Returns:
         A validated Settings object.
     """
+    # 0. Load Environment Variables (secrets)
+    load_dotenv()
+
     # 1. Validate Env Vars
     validate_environment()
 
