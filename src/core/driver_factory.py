@@ -10,6 +10,7 @@ from src.drivers.github_pr import GitHubPRService
 from src.drivers.github_wiki import GitHubWikiDocService
 from src.drivers.asana import AsanaTaskService
 from src.drivers.notion import NotionDocService
+from src.services.command_runner import CommandRunner, SubprocessCommandRunner
 from github import Github
 
 
@@ -76,3 +77,7 @@ class DriverFactory:
         if config.type == "github_pr":
             return self._pr_service_class()
         raise ValueError(f"Unknown pr driver: {config.type}")
+
+    def get_command_runner(self) -> CommandRunner:
+        """Returns the command runner."""
+        return SubprocessCommandRunner()

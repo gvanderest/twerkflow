@@ -31,6 +31,7 @@ class HydrationWatcher:
     def run_once(self, ticket_id: Optional[str], tags: list):
         """Executes the workflow once for a given ticket."""
         task_service = self.factory.get_task_service()
+        command_runner = self.factory.get_command_runner()
 
         # Hydration discovery: find un-hydrated issue
         issues = task_service.list_issues_by_label(tags[0])
@@ -43,7 +44,14 @@ class HydrationWatcher:
         issue = unhydrated_issues[0]
         print(f"--- Hydrating issue: {issue['id']} ---")
 
-        config = {"configurable": {"task_service": task_service, "tags": tags, "ticket_id": issue["id"]}}
+        config = {
+            "configurable": {
+                "task_service": task_service,
+                "tags": tags,
+                "ticket_id": issue["id"],
+                "command_runner": command_runner,
+            }
+        }
 
         # State creation is now deferred until we have an ID
         initial_state = TwerkflowState(status="starting", ticket_id=issue["id"])
