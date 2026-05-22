@@ -25,6 +25,9 @@ def process_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowStat
 
 def check_approval(state: TwerkflowState, config: RunnableConfig) -> str:
     """Helper: checks for approval."""
+    if not state.ticket_id:
+        return "pending"
+
     task_service: TaskService = config["configurable"]["task_service"]
     comments = task_service.get_comments(state.ticket_id)
     for comment in comments:

@@ -15,6 +15,9 @@ def gate_check_tag(state: TwerkflowState, config: RunnableConfig) -> str:
 
 def process_task(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Agentic node: uses the injected TaskService to process a task."""
+    if not state.ticket_id:
+        raise ValueError("Cannot process task without ticket_id")
+
     task_service: TaskService = config["configurable"]["task_service"]
     print(f"--- Real Driver Activity: Fetching task {state.ticket_id} ---")
 

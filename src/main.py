@@ -1,12 +1,12 @@
 """Main entry point for the Twerkflow."""
 
-from typing import Any
+from typing import Any, Optional
 
 from src.core.driver_factory import DriverFactory
 from src.core.state import TwerkflowState
 
 
-def run_twerkflow(ticket_id: str, tags: list, app: Any, factory: DriverFactory):
+def run_twerkflow(ticket_id: Optional[str], tags: list, app: Any, factory: DriverFactory):
     """Executes the Twerkflow workflow for a given ticket."""
     task_service = factory.get_task_service()
 
@@ -31,7 +31,6 @@ if __name__ == "__main__":
     # Test: Run hydration (should find tagged issues)
     print("--- Test: Hydration Flow ---")
 
-    # We pass dummy ID/tags as the hydration flow just needs a state object to start,
-    # then it overrides it with the issues it finds.
+    # Passing None for ticket_id as hydration flow discovers them
     factory = DriverFactory()
-    run_twerkflow("0", ["twerkflow"], app, factory)
+    run_twerkflow(None, ["twerkflow"], app, factory)
