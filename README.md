@@ -1,40 +1,38 @@
-# Twerk
+# Twerkflow
 
-Twerk is an intelligent automation system designed to streamline project management by orchestrating workflows across various tools like Asana, Notion, and GitHub. It acts as a central hub, monitoring events, executing predefined workflows, and managing the continuous loop of project tasks.
+Twerkflow is a LangGraph-based framework for end-to-end software development lifecycles that prioritizes human-in-the-loop (HILO) control, explicit guardrails, and agentic productivity.
 
-## Core Concept: Event-Driven Orchestration
+## Tenets
 
-At its heart, Twerk operates on an event-driven model. It listens for specific triggers from integrated services (Asana, Notion, GitHub) and, upon detection, initiates pre-defined workflows. These workflows can involve taking inputs, processing data, running complex logic, and submitting outputs back to the integrated services or other destinations.
+*   **Agents in the Middle**: Agents (using Claude Code) execute the dynamic "middle" of workflows (thinking, design, coding). Deterministic, programmatic gates handle guardrails and requirements.
+*   **Human in the Loop (HILO)**: All critical workflow stages require human approval via explicit sentinel commands. The system pauses at predefined checkpoints to await human intervention.
+*   **Humans Always Take Over**: Everything the agent does is something a human can do (design, write code, make PRs, merge, deploy). The system is a collaborator, not a black-box autocrat; humans can always intervene or take over.
+*   **Opt-in Only**: Automations are triggered only by explicit opt-in (e.g., an `twerkflow` Asana tag). The system will never act on untagged tasks or PRs.
+*   **Watermark Comments**: Every interaction (comment, commit, PR update) authored by Twerkflow is watermarked (e.g., *--- Authored by Twerkflow*).
+*   **Credential Security**: No secrets are stored in the codebase. All credentials are managed via `.env` files and environment variables, which are strictly gitignored.
+*   **Ticket as Database**: The Asana/GitHub ticket description is the primary source of truth for durable state and audit history, utilizing a JSON structure `<twerkflow-state>...</twerkflow-state>` for persistence.
 
-## Architecture & Project Scope
+## Architecture
 
-This project serves as the initial implementation for defining and executing workflows, triggers, and end-to-end orchestration. While a separate core library (`twerk-lib`) may be considered in the future, the current focus is on establishing these core functionalities within this repository. This project will primarily house the user configurations for workflows and triggers.
+Twerkflow is built entirely using LangGraph. The lifecycle is represented as a directed graph where nodes are either:
+1.  **Agentic Nodes**: Execute tasks using `claude-code` (via a non-interactive Python subprocess wrapper).
+2.  **Programmatic Gate Nodes**: Perform deterministic checks (e.g., verifying CI status, parsing requirements).
 
-## Key Features & Goals
+### State Management
+*   **Local Active Store**: An SQLite/JSON store manages active graph execution state.
+*   **Durable Checkpoint**: State is synced to the ticket description at every major HILO checkpoint.
+*   **Recovery**: If the system reboots, it rehydrates its local state from the ticket description.
 
-*   **Automated Event Monitoring**: Watch for critical events from Asana, Notion, and GitHub.
-*   **Code-Defined Workflows**: Explicitly define complex workflows in code for clarity and maintainability.
-*   **Continuous Loop Processing**: Seamlessly handle a sequence of tasks, from input to output, in an ongoing cycle.
-*   **Flexible Configuration**: Define triggers, workflows, data sources, and outputs with a structured approach.
-*   **Simple Execution**: Start the Twerk server with a single command to initiate configured workflows.
+### Interaction & HILO
+*   **Sentinels**: Transitions (e.g., moving from Design to Code) are triggered only by explicit sentinel values in comments (e.g., `[TWERKFLOW_CMD: <ID> APPROVED_FOR_CODE]`).
+*   **Self-Ignorance**: The system parses its own comments by a unique watermark/ID to ensure it does not trigger its own logic.
 
-## Example Workflow Implementations
-
-The power of Twerk lies in its ability to automate recurring project management tasks. Here are some examples of primary flows that Twerk can manage:
-
-*   **Design Ticket**: Provide context to Twerk to research a ticket using multiple personas, compile findings, and generate a design document in Notion.
-*   **Notion Feedback Integration**: Automatically re-review and update a Notion design doc when feedback is received on an associated Asana ticket.
-*   **Execute Project**: Convert a design doc into an Asana task with subtasks, automate execution, and update task status.
-*   **PR Babysitting**: Ensure the quality of a Pull Request by verifying unit test coverage, formatting, type checks, and CI/CD pipeline status.
-*   **PR Feedback Loop**: Process comments and reviews on a PR, use the context to improve the code, re-run verifications, and return to PR Babysitting.
-*   **PR Merge (Manual to Start)**: Once all verifications pass and quality checks are met, the PR can be manually merged.
-*   **CI/CD Deployment**: Automate direct deployment through CI/CD pipelines, with verifications at DEV, STAGING, and PROD environments.
-*   **Bugfix Ticket**: Handle bug fix workflows, potentially skipping some high-level steps but following a similar verification and execution path.
-
-## Ultimate Goal: Self-Development
-
-The long-term vision for Twerk is to achieve a state of self-development. By leveraging its own capabilities to manage its codebase, Twerk aims to eventually delete its `PROJECT.md` file, signifying a mature system capable of orchestrating its own evolution using external tools as its primary interface.
+### Execution
+*   The system acts as a collaborator using your credentials.
+*   It utilizes headless `claude-code` with managed I/O, timeouts, and live observability tailing.
 
 ## Getting Started
 
-The initial phase of Twerk development involves researching existing frameworks that can provide a robust foundation for defining and executing complex workflows. This research will guide the selection of technologies that best fit our needs for flexibility, extensibility, and ease of use.
+1.  **Configure**: Set up your `.env` with the necessary API tokens (Asana, GitHub, etc.).
+2.  **Tag**: Apply the `twerkflow` tag to an Asana task to opt-in to automation.
+3.  **Monitor**: Interact via ticket comments using the required sentinel values when the system pauses for HILO approval.
