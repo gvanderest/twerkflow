@@ -1,7 +1,7 @@
 """State representation for the Twerkflow workflow."""
 
-from typing import Optional
-from pydantic import BaseModel, ConfigDict
+from typing import Optional, Dict, Any
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TwerkflowState(BaseModel):
@@ -10,7 +10,11 @@ class TwerkflowState(BaseModel):
     # Allow nodes to add/manage custom keys dynamically
     model_config = ConfigDict(extra="allow")
 
-    status: Optional[str] = None
+    # Basic ticket details
+    ticket_id: Optional[str] = None
+    ticket_title: Optional[str] = None
+    ticket_body: Optional[str] = None
 
-    # Store any dynamic state in __pydantic_extra__
-    # This allows nodes to set state.my_key = "value"
+    # Dynamic workflow state
+    status: Optional[str] = None
+    context: Dict[str, Any] = Field(default_factory=dict)
