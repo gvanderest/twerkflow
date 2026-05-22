@@ -23,3 +23,7 @@ class AsanaTaskService(TaskService):
     def get_comments(self, task_id: str) -> List[Dict[str, Any]]:
         """Fetches comments for a task from Asana."""
         raise NotImplementedError("AsanaTaskService.get_comments not implemented")
+
+    def list_issues_by_label(self, label: str) -> List[Dict[str, Any]]:
+        """Lists issues with a specific label from Asana."""
+        raise NotImplementedError("AsanaTaskService.list_issues_by_label not implemented")

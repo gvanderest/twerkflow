@@ -13,9 +13,9 @@ def test_github_issue_driver_methods():
     mock_issue.number = 123
     mock_issue.title = "Test"
     mock_issue.body = (
-        'Body\n\n<twerkflow-state>\n'
+        "Body\n\n<twerkflow-state>\n"
         '{"ticket_id": "123", "ticket_title": "Test", "tags": [], "status": "pending", "messages": []}\n'
-        '</twerkflow-state>'
+        "</twerkflow-state>"
     )
     mock_issue.state = "open"
     mock_issue.labels = [MagicMock(name="tag1")]
@@ -39,6 +39,7 @@ def test_github_issue_driver_methods():
     assert driver.get_task("123")["title"] == "Test"
     assert driver.get_events("123")[0]["event"] == "labeled"
     assert driver.get_comments("123")[0]["body"] == "comment"
+    assert driver.list_issues_by_label("twerkflow") == []
 
     driver.update_task("123", {"status": "closed", "labels": ["tag2"]})
     mock_issue.edit.assert_called_with(state="closed")

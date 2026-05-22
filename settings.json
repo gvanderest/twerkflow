@@ -9,7 +9,8 @@
         "task_service": {
             "type": "github_issues",
             "params": {
-                "repo_name": "gvanderest/twerkflow"
+                "repo_name": "gvanderest/twerkflow",
+                "label_to_search": "twerkflow"
             }
         },
         "doc_service": "github_wiki",

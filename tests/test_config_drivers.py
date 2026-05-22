@@ -14,8 +14,9 @@ from src.drivers.config import (
 def test_github_issue_config_success():
     """Verifies GitHubIssueConfig with token."""
     os.environ["GITHUB_TOKEN"] = "test_token"
-    config = GitHubIssueConfig(repo_name="test/repo")
+    config = GitHubIssueConfig(repo_name="test/repo", label_to_search="test_label")
     assert config.repo_name == "test/repo"
+    assert config.label_to_search == "test_label"
     assert config.token.get_secret_value() == "test_token"
 
 
