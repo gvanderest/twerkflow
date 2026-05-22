@@ -16,6 +16,10 @@ if grep -r -E "monkeypatch" src tests --exclude-dir=__pycache__ | grep -v "conft
     exit 1
 fi
 
+# 0.5. Check constructor complexity
+echo "Checking constructor complexity..."
+$VENV_PYTHON scripts/linters/constructor_checker.py || exit 1
+
 # 1. Linting
 echo "Running flake8 (linting)..."
 $VENV_PYTHON -m flake8 --max-line-length=120 src tests || { echo "Linting failed. Run 'make format' to fix style issues."; exit 1; }

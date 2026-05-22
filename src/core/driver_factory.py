@@ -9,22 +9,31 @@ from src.drivers.config import GitHubIssueConfig
 from github import Github
 
 
+from pydantic import BaseModel
+from typing import Any, Optional
+
+
+class DriverFactoryConfig(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+    settings: Any = None
+    task_service_class: Any = GitHubIssueTaskService
+    doc_service_class: Any = NotionDocService
+    pr_service_class: Any = GitHubPRService
+    github_client_class: Any = Github
+    config_class: Any = GitHubIssueConfig
+
+
 class DriverFactory:
-    def __init__(
-        self,
-        settings=None,
-        task_service_class=GitHubIssueTaskService,
-        doc_service_class=NotionDocService,
-        pr_service_class=GitHubPRService,
-        github_client_class=Github,
-        config_class=GitHubIssueConfig,
-    ):
-        self.settings = settings or load_settings()
-        self._task_service_class = task_service_class
-        self._doc_service_class = doc_service_class
-        self._pr_service_class = pr_service_class
-        self._github_client_class = github_client_class
-        self._config_class = config_class
+    def __init__(self, config: Optional[DriverFactoryConfig] = None):
+        config = config or DriverFactoryConfig()
+        self.settings = config.settings or load_settings()
+        self._task_service_class = config.task_service_class
+        self._doc_service_class = config.doc_service_class
+        self._pr_service_class = config.pr_service_class
+        self._github_client_class = config.github_client_class
+        self._config_class = config.config_class
 
     def get_task_service(self) -> TaskService:
         config = self.settings.get_driver_config("task_service")

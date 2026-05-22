@@ -3,12 +3,7 @@ from src.core.state import TwerkflowState
 from src.core.driver_factory import DriverFactory
 
 
-def run_twerkflow(
-    ticket_id: str,
-    tags: list,
-    app: Any,
-    factory: DriverFactory
-):
+def run_twerkflow(ticket_id: str, tags: list, app: Any, factory: DriverFactory):
     task_service = factory.get_task_service()
 
     config = {"configurable": {"task_service": task_service}}
@@ -18,7 +13,7 @@ def run_twerkflow(
         ticket_title="Example Ticket",
         tags=tags,
         status="pending",
-        messages=[]
+        messages=[],
     )
 
     result = app.invoke(initial_state, config=config)
@@ -28,6 +23,7 @@ def run_twerkflow(
 
 if __name__ == "__main__":
     from src.workflows.naive_flow import app
+
     # Test 1: Tagged (Should process)
     print("--- Test 1: Tagged ---")
     run_twerkflow("123", ["twerkflow", "design"], app, DriverFactory())
