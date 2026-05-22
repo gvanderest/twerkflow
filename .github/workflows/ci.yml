@@ -25,11 +25,9 @@ jobs:
       - name: Setup environment
         run: make setup
 
-      - name: Run checks
+      - name: Run precommit checks
         run: |
-          source .venv/bin/activate
-          export PYTHONPATH=$PYTHONPATH:.
-          python -m mypy src
-          python -m pytest --cov=src --cov-fail-under=90 tests
+          chmod +x scripts/precommit.sh
+          ./scripts/precommit.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
