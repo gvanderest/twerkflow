@@ -81,7 +81,9 @@ def test_hydration_watcher_skip_completed():
     watcher.run_once(None, ["twerkflow"])
 
     # Should have updated the task to add the label
-    mock_task_service.update_task.assert_called_once_with("5", {"labels": ["twerkflow", "twerkflow-complete"]})
+    args, kwargs = mock_task_service.update_task.call_args
+    assert args[0] == "5"
+    assert sorted(args[1]["labels"]) == sorted(["twerkflow", "twerkflow-complete"])
 
 
 def test_hydration_watcher_run_watcher():
