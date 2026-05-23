@@ -1,7 +1,7 @@
 """Provides a factory to instantiate task, document, and PR services."""
 
+from typing import Any, Optional, cast
 from pydantic import BaseModel
-from typing import Any, Optional
 from src.core.config_loader import load_settings
 from src.drivers.base import DocService, PRService, TaskService
 from src.drivers.config import GitHubIssueConfig
@@ -52,9 +52,9 @@ class DriverFactory:
                 raise ValueError("GITHUB_TOKEN is required")
             github_client = self._github_client_class(typed_config.token.get_secret_value())
             repo = github_client.get_repo(typed_config.repo_name)
-            return self._task_service_class(repo=repo)
+            return cast(TaskService, self._task_service_class(repo=repo))
         elif config.type == "asana":
-            return AsanaTaskService(**config.params)
+            return cast(TaskService, AsanaTaskService(**config.params))
         raise ValueError(f"Unknown task driver: {config.type}")
 
     def get_doc_service(self) -> DocService:
@@ -68,14 +68,14 @@ class DriverFactory:
             typed_config = NotionConfig(**config.params)
             if not typed_config.token:
                 raise ValueError("NOTION_API_KEY is required")
-            return self._doc_service_class(token=typed_config.token.get_secret_value())
+            return cast(DocService, self._doc_service_class(token=typed_config.token.get_secret_value()))
         raise ValueError(f"Unknown doc driver: {config.type}")
 
     def get_pr_service(self) -> PRService:
         """Returns the configured PRService."""
         config = self.settings.get_driver_config("pr_service")
         if config.type == "github_pr":
-            return self._pr_service_class()
+            return cast(PRService, self._pr_service_class())
         raise ValueError(f"Unknown pr driver: {config.type}")
 
     def get_command_runner(self) -> CommandRunner:

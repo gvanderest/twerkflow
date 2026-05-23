@@ -1,7 +1,7 @@
 """Provides a watcher service for hydration workflow."""
 
 import time
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict
 from src.core.state import TwerkflowState
 from src.core.config_loader import load_settings
@@ -28,7 +28,7 @@ class HydrationWatcher:
         self.sleep_func = config.sleep_func
         self.settings = config.load_settings_func()
 
-    def run_once(self, ticket_id: Optional[str], tags: list):
+    def run_once(self, ticket_id: Optional[str], tags: List[str]) -> Optional[Dict[str, Any]]:
         """Executes the workflow once for a given ticket."""
         task_service = self.factory.get_task_service()
         command_runner = self.factory.get_command_runner()
@@ -92,7 +92,7 @@ class HydrationWatcher:
 
         return None
 
-    def run_watcher(self, iterations: int = 0):
+    def run_watcher(self, iterations: int = 0) -> None:
         """Runs the hydration watcher service loop."""
         interval = self.settings.poll_interval_seconds
         count = 0

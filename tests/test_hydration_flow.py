@@ -2,19 +2,22 @@
 
 from unittest.mock import MagicMock
 from src.core.state import TwerkflowState
+from src.core.types import WorkflowConfig
 from src.workflows.hydration_flow import app, check_hydration_status, delay_node
-
+from src.drivers.base import TaskService
+from src.services.command_runner import CommandRunner
 
 def test_hydration_flow_success():
     """Verify hydration flow persists state and finishes."""
-    mock_task_service = MagicMock()
+    mock_task_service = MagicMock(spec=TaskService)
 
     config = {
-        "configurable": {
-            "task_service": mock_task_service,
-            "ticket_id": "1",
-            "command_runner": MagicMock(),
-        }
+        "configurable": WorkflowConfig(
+            task_service=mock_task_service,
+            ticket_id="1",
+            command_runner=MagicMock(spec=CommandRunner),
+            tags=["twerkflow"],
+        )
     }
 
     state = TwerkflowState(
@@ -22,7 +25,7 @@ def test_hydration_flow_success():
         ticket_id="1",
     )
 
-    result = app.invoke(state, config=config)
+    result = app.invoke(state, config=config)  # type: ignore
 
     assert result["status"] == "completed"
     # Check persistence call
