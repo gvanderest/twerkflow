@@ -53,7 +53,7 @@ class HydrationWatcher:
             existing_state = task_service.get_twerkflow_state(issue["id"])
 
             if existing_state and existing_state.status == "completed":
-                print(f"--- Issue {issue['id']} already completed, checking labels ---")
+                print(f"--- Issue {issue['id']} already completed, checking existing labels: {labels} ---")
                 if "twerkflow-complete" not in labels:
                     print(f"--- Issue {issue['id']} completed, adding label ---")
                     # Append new label, keep existing ones
