@@ -40,7 +40,10 @@ class HydrationWatcher:
         candidates = [
             i
             for i in issues
-            if not any(label.get("name") in ["twerkflow-complete", "twerkflow-hilo"] for label in i.get("labels", []))
+            if not any(
+                label.get("name") in ["twerkflow-complete", "twerkflow-hilo"]
+                for label in i.get("labels", [])
+            )
         ]
 
         if not candidates:
@@ -49,7 +52,9 @@ class HydrationWatcher:
 
         # Process candidates
         for issue in candidates:
-            labels = [label.get("name") for label in issue.get("labels", [])]
+            # Fetch the latest issue data
+            issue_data = task_service.get_task(issue["id"])
+            labels = [label.get("name") for label in issue_data.get("labels", [])]
             print(f"--- Processing issue: {issue['id']}, labels: {labels} ---")
 
             # Check if hydrated
@@ -57,7 +62,6 @@ class HydrationWatcher:
 
             if existing_state and existing_state.status == "completed":
                 print(f"--- Issue {issue['id']} already completed, checking labels ---")
-                labels = [label.get("name") for label in issue.get("labels", [])]
                 if "twerkflow-complete" not in labels:
                     print(f"--- Issue {issue['id']} completed, adding label ---")
                     # Append new label, keep existing ones
@@ -68,7 +72,6 @@ class HydrationWatcher:
                 continue
 
             # Check if issue already has 'twerkflow-complete' (safety check)
-            labels = [label.get("name") for label in issue.get("labels", [])]
             if "twerkflow-complete" in labels:
                 print(f"--- Skipping issue {issue['id']} as it is already marked 'twerkflow-complete' ---")
                 continue
@@ -87,7 +90,7 @@ class HydrationWatcher:
                 state = existing_state
             else:
                 print(f"--- Hydrating issue: {issue['id']} ---")
-                state = TwerkflowState(status="starting", ticket_id=issue["id"])
+                state = TwerkflowState(status="starting", ticket_id=str(issue["id"]))
 
             # Execute workflow
             result = self.app.invoke(state, config=config)
