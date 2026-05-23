@@ -46,5 +46,7 @@ def test_nodes_and_edges():
     # Test check_hydration_status
     state.status = "starting"
     assert check_hydration_status(state) == "finished"
+    state.status = "completed"
+    assert check_hydration_status(state) == "finished"
     state.status = "pending"
     assert check_hydration_status(state) == "delay"

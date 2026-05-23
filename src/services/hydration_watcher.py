@@ -47,12 +47,16 @@ class HydrationWatcher:
             print("--- No issues found with tag 'twerkflow'. ---")
             return None
 
-        # Process candidates: either hydrate them or resume if already hydrated
+        # Process candidates
         for issue in candidates:
             print(f"--- Processing issue: {issue['id']} ---")
 
             # Check if hydrated
             existing_state = task_service.get_twerkflow_state(issue["id"])
+
+            if existing_state and existing_state.status == "completed":
+                print(f"--- Skipping completed issue: {issue['id']} ---")
+                continue
 
             config = {
                 "configurable": {
@@ -64,7 +68,7 @@ class HydrationWatcher:
             }
 
             if existing_state:
-                print(f"--- Resuming issue: {issue['id']} ---")
+                print(f"--- Resuming issue: {issue['id']} (status: {existing_state.status}) ---")
                 state = existing_state
             else:
                 print(f"--- Hydrating issue: {issue['id']} ---")
@@ -73,6 +77,11 @@ class HydrationWatcher:
             # Execute workflow
             result = self.app.invoke(state, config=config)
             print(f"Cycle Result for {issue['id']}: {result}")
+
+            # If completed, add label
+            if isinstance(result, TwerkflowState) and result.status == "completed":
+                print(f"--- Issue {issue['id']} completed, adding label ---")
+                task_service.update_task(issue["id"], {"labels": [tags[0], "twerkflow-complete"]})
 
         return None
 
