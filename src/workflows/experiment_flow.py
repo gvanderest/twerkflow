@@ -6,6 +6,7 @@ from langchain_core.runnables import RunnableConfig
 from src.core.state import TwerkflowState
 from src.core.types import WorkflowConfig
 
+
 def start_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Initializes the workflow."""
     print("--- Starting fortune workflow ---")
