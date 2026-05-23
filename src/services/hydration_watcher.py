@@ -35,12 +35,18 @@ class HydrationWatcher:
 
         # Discovery: find issues with twerkflow label
         issues = task_service.list_issues_by_label(tags[0])
+        print(f"--- Found {len(issues)} issues with tag '{tags[0]}': {[i['id'] for i in issues]} ---")
 
         # Filter: ignore issues labeled 'complete' or 'hilo'
         candidates = []
         for i in issues:
             labels = [label.get("name") for label in i.get("labels", [])]
-            if not any(label_name in ["twerkflow-complete", "twerkflow-hilo"] for label_name in labels):
+            # Log labels found on the issue
+            print(f"--- Checking issue {i.get('id')}, labels: {labels} ---")
+            if not any(
+                label_name in ["twerkflow-complete", "twerkflow-hilo"]
+                for label_name in labels
+            ):
                 candidates.append(i)
 
         if not candidates:
