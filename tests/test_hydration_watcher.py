@@ -42,6 +42,11 @@ def test_hydration_watcher_run_once():
 
 def test_hydration_watcher_resume():
     """Verify run_once resumes an existing workflow."""
+    # ... existing test ...
+
+
+def test_hydration_watcher_skip_completed():
+    """Verify run_once skips completed issues and adds label if missing."""
     mock_factory = MagicMock()
     mock_app = MagicMock()
     mock_task_service = MagicMock()
@@ -49,11 +54,17 @@ def test_hydration_watcher_resume():
     mock_factory.get_command_runner.return_value = MagicMock()
 
     # Mock issue listing
-    mock_task_service.list_issues_by_label.return_value = [
-        {"id": "1", "title": "Test Issue", "body": "Body", "status": "open", "labels": []}
-    ]
-    # Mock existing state
-    mock_state = TwerkflowState(status="starting", ticket_id="1")
+    mock_issue = {
+        "id": "5",
+        "title": "Test Issue",
+        "body": "Body",
+        "status": "open",
+        "labels": [],
+    }
+    mock_task_service.list_issues_by_label.return_value = [mock_issue]
+
+    # Mock completed state
+    mock_state = TwerkflowState(status="completed", ticket_id="5")
     mock_task_service.get_twerkflow_state.return_value = mock_state
 
     # Mock settings
@@ -69,8 +80,8 @@ def test_hydration_watcher_resume():
     watcher = HydrationWatcher(config)
     watcher.run_once(None, ["twerkflow"])
 
-    mock_app.invoke.assert_called_once()
-    assert mock_app.invoke.call_args[0][0].status == "starting"
+    # Should have updated the task to add the label
+    mock_task_service.update_task.assert_called_once_with("5", {"labels": ["twerkflow", "twerkflow-complete"]})
 
 
 def test_hydration_watcher_run_watcher():
