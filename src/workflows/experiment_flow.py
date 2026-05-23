@@ -1,11 +1,10 @@
 """Defines an experimental workflow for fortune teller."""
 
+from typing import cast
 from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnableConfig
 from src.core.state import TwerkflowState
-from src.drivers.base import TaskService
-from src.services.command_runner import CommandRunner
-
+from src.core.types import WorkflowConfig
 
 def start_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Initializes the workflow."""
@@ -16,11 +15,13 @@ def start_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
 
 def generate_fortune(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Runs pi to generate fortune and comments it."""
-    ticket_id = config["configurable"].get("ticket_id")
+    conf = cast(WorkflowConfig, config["configurable"])
+    ticket_id = conf.get("ticket_id")
     if not ticket_id:
         raise ValueError("Cannot process task without ticket_id")
 
-    runner: CommandRunner = config["configurable"]["command_runner"]
+    runner = conf["command_runner"]
+    task_service = conf["task_service"]
 
     print(f"--- Generating fortune for issue {ticket_id} ---")
 
@@ -34,7 +35,7 @@ def generate_fortune(state: TwerkflowState, config: RunnableConfig) -> Twerkflow
         "gh",
         "issue",
         "comment",
-        str(ticket_id),
+        ticket_id,
         "-b",
         f"{fortune} \n\n --- *Authored by Twerkflow (experimental)* ---",
     ]
@@ -43,7 +44,6 @@ def generate_fortune(state: TwerkflowState, config: RunnableConfig) -> Twerkflow
     state.status = "completed"
 
     # Persist state
-    task_service: TaskService = config["configurable"]["task_service"]
     task_service.update_twerkflow_state(ticket_id, state)
 
     return state

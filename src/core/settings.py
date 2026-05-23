@@ -40,7 +40,7 @@ class Settings(BaseModel):
         return config
 
 
-def validate_environment():
+def validate_environment() -> None:
     """Validates that all required environment variables are present."""
     required_vars = ["GITHUB_TOKEN"]  # Expand as we add drivers
     missing = [var for var in required_vars if not os.getenv(var)]

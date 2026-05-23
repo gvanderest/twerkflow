@@ -1,7 +1,7 @@
 """Configuration models for various drivers."""
 
 import os
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, SecretStr, model_validator
 
@@ -15,7 +15,7 @@ class GitHubIssueConfig(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def populate_token(cls, data: dict) -> dict:
+    def populate_token(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         """Populates token from environment variable if missing."""
         if "token" not in data or data["token"] is None:
             token = os.getenv("GITHUB_TOKEN")
@@ -33,7 +33,7 @@ class AsanaConfig(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def populate_token(cls, data: dict) -> dict:
+    def populate_token(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         """Populates token from environment variable if missing."""
         if "token" not in data or data["token"] is None:
             token = os.getenv("ASANA_PAT")
@@ -57,7 +57,7 @@ class NotionConfig(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def populate_token(cls, data: dict) -> dict:
+    def populate_token(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         """Populates token from environment variable if missing."""
         if "token" not in data or data["token"] is None:
             token = os.getenv("NOTION_API_KEY")
@@ -75,7 +75,7 @@ class GitHubPRConfig(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def populate_token(cls, data: dict) -> dict:
+    def populate_token(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         """Populates token from environment variable if missing."""
         if "token" not in data or data["token"] is None:
             token = os.getenv("GITHUB_TOKEN")

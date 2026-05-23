@@ -1,18 +1,20 @@
 """Defines the hydration workflow."""
 
 import time
+from typing import cast
 from langgraph.graph import END, StateGraph
 from langchain_core.runnables import RunnableConfig
 from src.core.state import TwerkflowState
-from src.drivers.base import TaskService
+from src.core.types import WorkflowConfig
 from src.core.config_loader import load_settings
 from src.workflows.experiment_flow import generate_fortune
 
 
 def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Node: persist initial state to the found issue."""
-    task_service: TaskService = config["configurable"]["task_service"]
-    ticket_id = config["configurable"].get("ticket_id")
+    conf = cast(WorkflowConfig, config["configurable"])
+    task_service = conf["task_service"]
+    ticket_id = conf.get("ticket_id")
 
     if not ticket_id:
         raise ValueError("Cannot hydrate issue without ticket_id")
@@ -30,7 +32,8 @@ def hydrate_issues(state: TwerkflowState, config: RunnableConfig) -> TwerkflowSt
 def fortune_node(state: TwerkflowState, config: RunnableConfig) -> TwerkflowState:
     """Node: conditionally run fortune teller."""
     # Rely on ticket_id passed in config
-    ticket_id = config["configurable"].get("ticket_id")
+    conf = cast(WorkflowConfig, config["configurable"])
+    ticket_id = conf.get("ticket_id")
     print(f"--- fortune_node: status={state.status}, ticket_id={ticket_id} ---")
     if state.status == "starting" and ticket_id:
         return generate_fortune(state, config)
