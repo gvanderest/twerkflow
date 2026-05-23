@@ -24,6 +24,7 @@ class GitHubIssueTaskService(TaskService):
             "title": issue.title,
             "body": issue.body,
             "status": issue.state,
+            "labels": [{"name": label.name} for label in issue.labels],
         }
 
     def update_task(self, task_id: str, data: Dict[str, Any]) -> None:
@@ -74,6 +75,7 @@ class GitHubIssueTaskService(TaskService):
                 "title": issue.title,
                 "body": issue.body,
                 "status": issue.state,
+                "labels": [{"name": label.name} for label in issue.labels],
             }
             for issue in issues
         ]
