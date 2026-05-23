@@ -49,7 +49,8 @@ class HydrationWatcher:
 
         # Process candidates
         for issue in candidates:
-            print(f"--- Processing issue: {issue['id']} ---")
+            labels = [label.get("name") for label in issue.get("labels", [])]
+            print(f"--- Processing issue: {issue['id']}, labels: {labels} ---")
 
             # Check if hydrated
             existing_state = task_service.get_twerkflow_state(issue["id"])
