@@ -59,7 +59,11 @@ class HydrationWatcher:
                 labels = [label.get("name") for label in issue.get("labels", [])]
                 if "twerkflow-complete" not in labels:
                     print(f"--- Issue {issue['id']} completed, adding label ---")
-                    task_service.update_task(issue["id"], {"labels": [tags[0], "twerkflow-complete"]})
+                    # Append new label, keep existing ones
+                    new_labels = list(set(labels + [tags[0], "twerkflow-complete"]))
+                    task_service.update_task(issue["id"], {"labels": new_labels})
+                else:
+                    print(f"--- Issue {issue['id']} already has 'twerkflow-complete' label, skipping ---")
                 continue
 
             config = {
