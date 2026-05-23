@@ -7,6 +7,7 @@ from src.workflows.hydration_flow import app, check_hydration_status, delay_node
 from src.drivers.base import TaskService
 from src.services.command_runner import CommandRunner
 
+
 def test_hydration_flow_success():
     """Verify hydration flow persists state and finishes."""
     mock_task_service = MagicMock(spec=TaskService)
