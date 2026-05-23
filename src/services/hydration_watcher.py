@@ -83,7 +83,8 @@ class HydrationWatcher:
             print(f"Cycle Result for {issue['id']}: {result}")
 
             # If completed, add label if missing
-            if result.status == "completed":
+            status = getattr(result, "status", None) or result.get("status")
+            if status == "completed":
                 labels = [label.name for label in issue.get("labels", [])]
                 if "twerkflow-complete" not in labels:
                     print(f"--- Issue {issue['id']} completed, adding label ---")
