@@ -48,6 +48,8 @@ class HydrationWatcher:
                 for label_name in labels
             ):
                 candidates.append(i)
+            else:
+                print(f"--- Skipping issue {i.get('id')} due to completion/hilo labels ---")
 
         if not candidates:
             print("--- No issues found with tag 'twerkflow'. ---")
