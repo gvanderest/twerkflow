@@ -78,10 +78,12 @@ class HydrationWatcher:
             result = self.app.invoke(state, config=config)
             print(f"Cycle Result for {issue['id']}: {result}")
 
-            # If completed, add label
-            if isinstance(result, TwerkflowState) and result.status == "completed":
-                print(f"--- Issue {issue['id']} completed, adding label ---")
-                task_service.update_task(issue["id"], {"labels": [tags[0], "twerkflow-complete"]})
+            # If completed, add label if missing
+            if result.status == "completed":
+                labels = [label.name for label in issue.get("labels", [])]
+                if "twerkflow-complete" not in labels:
+                    print(f"--- Issue {issue['id']} completed, adding label ---")
+                    task_service.update_task(issue["id"], {"labels": [tags[0], "twerkflow-complete"]})
 
         return None
 
