@@ -40,7 +40,7 @@ class HydrationWatcher:
         candidates = [
             i
             for i in issues
-            if not any(label.name in ["twerkflow-complete", "twerkflow-hilo"] for label in i.get("labels", []))
+            if not any(label.get("name") in ["twerkflow-complete", "twerkflow-hilo"] for label in i.get("labels", []))
         ]
 
         if not candidates:
@@ -56,7 +56,7 @@ class HydrationWatcher:
 
             if existing_state and existing_state.status == "completed":
                 print(f"--- Issue {issue['id']} already completed, checking labels ---")
-                labels = [label.name for label in issue.get("labels", [])]
+                labels = [label.get("name") for label in issue.get("labels", [])]
                 if "twerkflow-complete" not in labels:
                     print(f"--- Issue {issue['id']} completed, adding label ---")
                     task_service.update_task(issue["id"], {"labels": [tags[0], "twerkflow-complete"]})
@@ -83,9 +83,12 @@ class HydrationWatcher:
             print(f"Cycle Result for {issue['id']}: {result}")
 
             # If completed, add label if missing
-            status = getattr(result, "status", None) or result.get("status")
+            status = getattr(result, "status", None)
+            if not status and isinstance(result, dict):
+                status = result.get("status")
+
             if status == "completed":
-                labels = [label.name for label in issue.get("labels", [])]
+                labels = [label.get("name") for label in issue.get("labels", [])]
                 if "twerkflow-complete" not in labels:
                     print(f"--- Issue {issue['id']} completed, adding label ---")
                     task_service.update_task(issue["id"], {"labels": [tags[0], "twerkflow-complete"]})
