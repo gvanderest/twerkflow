@@ -67,6 +67,12 @@ class HydrationWatcher:
                     print(f"--- Issue {issue['id']} already has 'twerkflow-complete' label, skipping ---")
                 continue
 
+            # Check if issue already has 'twerkflow-complete' (safety check)
+            labels = [label.get("name") for label in issue.get("labels", [])]
+            if "twerkflow-complete" in labels:
+                print(f"--- Skipping issue {issue['id']} as it is already marked 'twerkflow-complete' ---")
+                continue
+
             config = {
                 "configurable": {
                     "task_service": task_service,
