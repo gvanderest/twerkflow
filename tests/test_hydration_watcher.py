@@ -17,9 +17,15 @@ def test_hydration_watcher_run_once():
     mock_app.invoke.return_value = TwerkflowState(status="completed", ticket_id="1")
 
     # Mock issue listing
-    mock_task_service.list_issues_by_label.return_value = [
-        {"id": "1", "title": "Test Issue", "body": "Body", "status": "open", "labels": []}
-    ]
+    mock_issue = {
+        "id": "1",
+        "title": "Test Issue",
+        "body": "Body",
+        "status": "open",
+        "labels": [],
+    }
+    mock_task_service.list_issues_by_label.return_value = [mock_issue]
+    mock_task_service.get_task.return_value = mock_issue
     # Mock existing state
     mock_task_service.get_twerkflow_state.return_value = None
 
@@ -62,6 +68,7 @@ def test_hydration_watcher_skip_completed():
         "labels": [],
     }
     mock_task_service.list_issues_by_label.return_value = [mock_issue]
+    mock_task_service.get_task.return_value = mock_issue
 
     # Mock completed state
     mock_state = TwerkflowState(status="completed", ticket_id="5")
