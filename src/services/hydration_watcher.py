@@ -37,30 +37,17 @@ class HydrationWatcher:
         issues = task_service.list_issues_by_label(tags[0])
         print(f"--- Found {len(issues)} issues with tag '{tags[0]}': {[i['id'] for i in issues]} ---")
 
-        # Filter: ignore issues labeled 'complete' or 'hilo'
-        candidates = []
-        for i in issues:
-            labels = [label.get("name") for label in i.get("labels", [])]
-            # Log labels found on the issue
-            print(f"--- Checking issue {i.get('id')}, labels: {labels} ---")
-            if not any(
-                label_name in ["twerkflow-complete", "twerkflow-hilo"]
-                for label_name in labels
-            ):
-                candidates.append(i)
-            else:
-                print(f"--- Skipping issue {i.get('id')} due to completion/hilo labels ---")
-
-        if not candidates:
-            print("--- No issues found with tag 'twerkflow'. ---")
-            return None
-
         # Process candidates
-        for issue in candidates:
-            # Fetch the latest issue data
+        for issue in issues:
+            # Refresh issue data to get current labels
             issue_data = task_service.get_task(issue["id"])
             labels = [label.get("name") for label in issue_data.get("labels", [])]
             print(f"--- Processing issue: {issue['id']}, labels: {labels} ---")
+
+            # Check for completion/hilo labels
+            if any(label_name in ["twerkflow-complete", "twerkflow-hilo"] for label_name in labels):
+                print(f"--- Skipping issue {issue['id']} due to completion/hilo labels ---")
+                continue
 
             # Check if hydrated
             existing_state = task_service.get_twerkflow_state(issue["id"])
