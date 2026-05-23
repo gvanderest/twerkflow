@@ -55,7 +55,11 @@ class HydrationWatcher:
             existing_state = task_service.get_twerkflow_state(issue["id"])
 
             if existing_state and existing_state.status == "completed":
-                print(f"--- Skipping completed issue: {issue['id']} ---")
+                print(f"--- Issue {issue['id']} already completed, checking labels ---")
+                labels = [label.name for label in issue.get("labels", [])]
+                if "twerkflow-complete" not in labels:
+                    print(f"--- Issue {issue['id']} completed, adding label ---")
+                    task_service.update_task(issue["id"], {"labels": [tags[0], "twerkflow-complete"]})
                 continue
 
             config = {
